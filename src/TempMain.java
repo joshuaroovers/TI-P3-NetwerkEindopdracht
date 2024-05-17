@@ -1,3 +1,4 @@
+import GameObjects.Tank;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -8,11 +9,13 @@ import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 public class TempMain extends Application {
 
     private ResizableCanvas canvas;
+    private Tank tank = new Tank(new Point2D.Double(0,0),0,50,Color.blue);
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -50,7 +53,7 @@ public class TempMain extends Application {
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-50,-50, 100,100));
-
+        tank.draw(g2d);
     }
 
     private void update(double deltaTime){
