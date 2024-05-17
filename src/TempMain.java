@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
-public class Main extends Application {
+public class TempMain extends Application {
 
     private ResizableCanvas canvas;
 
@@ -37,7 +37,7 @@ public class Main extends Application {
         }.start();
 
         primaryStage.setScene(new Scene(mainPane));
-        primaryStage.setTitle("Tank Game");
+        primaryStage.setTitle("GameObjects.Tank Game");
         primaryStage.show();
         draw(g2d);
     }
