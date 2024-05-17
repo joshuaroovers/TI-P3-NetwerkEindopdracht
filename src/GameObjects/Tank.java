@@ -9,18 +9,33 @@ import java.awt.*;
 public class Tank extends GameObject {
 
     private Color color;
+    private final int speed = 100;
+    private boolean isMoving;
+    private boolean isMovingUp;
 
     public Tank(Point2D position, double rotation, int size, Color color) {
         this.position = new Point2D.Double(position.getX()-(size/2), position.getY()-(size/2));
         this.rotation = rotation;
-        this.body = new Rectangle2D.Double(0,0, size, size);
-        this.hitbox = new Rectangle2D.Double(0,0, size, size);
+        this.body = new Rectangle2D.Double(0, 0, size, size);
+        this.hitbox = new Rectangle2D.Double(0, 0, size, size);
+
         this.color = color;
+        this.isMoving = false;
+        this.isMovingUp = false;
     }
 
     @Override
-    public void update() {
+    public void update(double time) {
 
+        if(isMoving){
+            double moveY = 0;
+            if(isMovingUp){
+                moveY = -speed*time;
+            }else{
+                moveY = speed*time;
+            }
+            this.position = new Point2D.Double(this.position.getX(), this.position.getY()+moveY);
+        }
     }
 
     @Override
@@ -31,5 +46,13 @@ public class Tank extends GameObject {
         g2d.draw(fx.createTransformedShape(body));
         g2d.setColor(color);
         g2d.fill(fx.createTransformedShape(body));
+    }
+
+    public void setMovement(boolean move, boolean moveUp) {
+        this.isMoving = move;
+        this.isMovingUp = moveUp;
+    }
+    public void stopMovement(){
+        this.isMoving = false;
     }
 }

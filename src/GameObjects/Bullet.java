@@ -21,7 +21,7 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public void update() {
+    public void update(double deltaTime) {
 
     }
 
