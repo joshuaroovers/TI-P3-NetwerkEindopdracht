@@ -11,6 +11,7 @@ import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -59,6 +60,12 @@ public class TempMain extends Application {
         g2d.setBackground(Color.white);
         g2d.clearRect(0, 0, (int)canvas.getWidth(), (int)canvas.getHeight());
         g2d.translate((int)canvas.getWidth()/2, (int)canvas.getHeight()/2);
+        g2d.scale(1,-1);
+
+        g2d.setColor(Color.BLUE);
+        g2d.draw(new Line2D.Double(0,0,1000,0));
+        g2d.setColor(Color.RED);
+        g2d.draw(new Line2D.Double(0,0,0,1000));
 
         tank1.draw(g2d);
 

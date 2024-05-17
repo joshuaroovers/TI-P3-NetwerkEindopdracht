@@ -26,13 +26,12 @@ public class Tank extends GameObject {
 
     @Override
     public void update(double time) {
-
         if(isMoving){
             double moveY = 0;
             if(isMovingUp){
-                moveY = -speed*time;
-            }else{
                 moveY = speed*time;
+            }else{
+                moveY = -speed*time;
             }
             this.position = new Point2D.Double(this.position.getX(), this.position.getY()+moveY);
         }
@@ -40,12 +39,14 @@ public class Tank extends GameObject {
 
     @Override
     public void draw(Graphics2D g2d) {
-        AffineTransform fx =new AffineTransform();
-        fx.translate(position.getX(),position.getY());
+        AffineTransform tx = new AffineTransform();
+        tx.translate(position.getX(),position.getY());
+
+
         g2d.setColor(Color.black);
-        g2d.draw(fx.createTransformedShape(body));
+        g2d.draw(tx.createTransformedShape(body));
         g2d.setColor(color);
-        g2d.fill(fx.createTransformedShape(body));
+        g2d.fill(tx.createTransformedShape(body));
     }
 
     public void setMovement(boolean move, boolean moveUp) {
