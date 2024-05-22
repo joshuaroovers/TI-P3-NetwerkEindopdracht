@@ -14,7 +14,7 @@ public class Tank extends GameObject {
     private boolean isMovingUp;
 
     public Tank(Point2D position, double rotation, int size, Color color) {
-        this.position = new Point2D.Double(position.getX()-(size/2), position.getY()-(size/2));
+        this.position = new Point2D.Double(position.getX(), position.getY());
         this.rotation = rotation;
         this.body = new Rectangle2D.Double(0, 0, size, size);
         this.hitbox = new Rectangle2D.Double(0, 0, size, size);
@@ -22,6 +22,9 @@ public class Tank extends GameObject {
         this.color = color;
         this.isMoving = false;
         this.isMovingUp = false;
+
+        this.width = size;
+        this.height = size;
     }
 
     @Override
@@ -40,8 +43,7 @@ public class Tank extends GameObject {
     @Override
     public void draw(Graphics2D g2d) {
         AffineTransform tx = new AffineTransform();
-        tx.translate(position.getX(),position.getY());
-
+        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
 
         g2d.setColor(Color.black);
         g2d.draw(tx.createTransformedShape(body));

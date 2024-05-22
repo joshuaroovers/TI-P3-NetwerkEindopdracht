@@ -10,6 +10,8 @@ public abstract class GameObject {
     double rotation;
     Rectangle2D body;
     Rectangle2D hitbox;
+    int height;
+    int width;
 
     public abstract void update(double deltaTime);
     public abstract void draw(Graphics2D g2d);
