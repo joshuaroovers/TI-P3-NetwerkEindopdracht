@@ -70,7 +70,7 @@ public class TempMain extends Application {
         tank1.draw(g2d);
 
         g2d.setColor(Color.RED);
-        g2d.fill(new Rectangle2D.Double(-25,-25, 50,50));
+        g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
 
     }
 
@@ -88,6 +88,10 @@ public class TempMain extends Application {
             tank1.setRotateLeft();
         }else if(e.getCode() == KeyCode.D){
             tank1.setRotateRight();
+        }else if(e.getCode() == KeyCode.LEFT){
+            tank1.setRotateTurretLeft();
+        }else if(e.getCode() == KeyCode.RIGHT){
+            tank1.setRotateTurretRight();
         }
     }
     private void keyReleasedHandle(KeyEvent e) {
@@ -96,6 +100,8 @@ public class TempMain extends Application {
             tank1.stopMovement();
         }else if(e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){
             tank1.stopRotate();
+        }else if(e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT){
+            tank1.stopRotateTurret();
         }
     }
 

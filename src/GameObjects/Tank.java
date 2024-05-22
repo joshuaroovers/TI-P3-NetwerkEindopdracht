@@ -13,6 +13,9 @@ public class Tank extends GameObject {
     private boolean isMovingUp;
     private boolean isRotatingRight;
     private boolean isRotatingLeft;
+    private double turretRotation;
+    private boolean isRotatingTurretRight;
+    private boolean isRotatingTurretLeft;
 
     public Tank(Point2D position, double rotation, int size, Color color) {
         this.position = new Point2D.Double(position.getX(), position.getY());
@@ -29,6 +32,10 @@ public class Tank extends GameObject {
 
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
+
+        this.turretRotation = rotation+90;
+        this.isRotatingTurretRight = false;
+        this.isRotatingTurretLeft = false;
     }
 
     @Override
@@ -61,21 +68,39 @@ public class Tank extends GameObject {
             this.position = new Point2D.Double(this.position.getX()+moveX, this.position.getY()+moveY);
         }
 
-//            Point2D newPosition = new Point2D.Double(
-//                    this.position.getX() + speed * Math.cos(rotation),
-//                    this.position.getY() + speed
-//            );
+        if(isRotatingTurretRight || isRotatingTurretLeft){
+            System.out.println(turretRotation);
+            if(turretRotation > 360){
+                turretRotation = 0;
+            }else if(turretRotation < 0){
+                turretRotation = 360;
+            }
+            if(isRotatingTurretRight){
+                turretRotation--;
+            }
+            if(isRotatingTurretLeft){
+                turretRotation++;
+            }
+        }
     }
 
     @Override
     public void draw(Graphics2D g2d) {
-        AffineTransform tx = new AffineTransform();
-        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
-        tx.rotate(Math.toRadians(rotation), (width/2),(height/2));
+        AffineTransform tankTx = new AffineTransform();
+        tankTx.translate(position.getX()-(width/2),position.getY()-(height/2));
+        tankTx.rotate(Math.toRadians(rotation), (width/2),(height/2));
+
         g2d.setColor(Color.black);
-        g2d.draw(tx.createTransformedShape(body));
+        g2d.draw(tankTx.createTransformedShape(body));
         g2d.setColor(color);
-        g2d.fill(tx.createTransformedShape(body));
+        g2d.fill(tankTx.createTransformedShape(body));
+
+        AffineTransform turretTx = new AffineTransform();
+        turretTx.translate(position.getX()-(width/4),position.getY()-(height/4));
+        turretTx.rotate(Math.toRadians(turretRotation), (width/4), (height/4));
+
+        g2d.setColor(color);
+        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0, (width/2), (height/2))));
     }
 
     public void setMovement(boolean move, boolean moveUp) {
@@ -97,5 +122,16 @@ public class Tank extends GameObject {
     public void stopRotate(){
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
+    }
+
+    public void setRotateTurretRight() {
+        this.isRotatingTurretRight = true;
+    }
+    public void setRotateTurretLeft() {
+        this.isRotatingTurretLeft = true;
+    }
+    public void stopRotateTurret(){
+        this.isRotatingTurretRight = false;
+        this.isRotatingTurretLeft = false;
     }
 }
