@@ -84,12 +84,18 @@ public class TempMain extends Application {
             tank1.setMovement(true,true);
         } else if(e.getCode() == KeyCode.S){
             tank1.setMovement(true,false);
+        }else if(e.getCode() == KeyCode.A){
+            tank1.setRotateLeft();
+        }else if(e.getCode() == KeyCode.D){
+            tank1.setRotateRight();
         }
     }
     private void keyReleasedHandle(KeyEvent e) {
         System.out.println("key released: "+ e.getCharacter() + " :" + e.getCode());
         if(e.getCode() == KeyCode.W || e.getCode() == KeyCode.S){
             tank1.stopMovement();
+        }else if(e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){
+            tank1.stopRotate();
         }
     }
 
