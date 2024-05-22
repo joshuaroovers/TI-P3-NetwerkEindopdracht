@@ -8,7 +8,6 @@ import java.awt.*;
 
 public class Tank extends GameObject {
 
-    private Color color;
     private final int speed = 100;
     private boolean isMoving;
     private boolean isMovingUp;

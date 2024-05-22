@@ -12,6 +12,7 @@ public abstract class GameObject {
     Rectangle2D hitbox;
     int height;
     int width;
+    Color color;
 
     public abstract void update(double deltaTime);
     public abstract void draw(Graphics2D g2d);
