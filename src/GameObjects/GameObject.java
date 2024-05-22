@@ -8,8 +8,8 @@ import java.awt.*;
 public abstract class GameObject {
     Point2D position;
     double rotation;
-    Rectangle2D body;
-    Rectangle2D hitbox;
+    Shape body;
+    Shape hitbox;
     int height;
     int width;
     Color color;

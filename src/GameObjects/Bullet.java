@@ -2,6 +2,7 @@ package GameObjects;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -18,8 +19,8 @@ public class Bullet extends GameObject {
     public Bullet(Point2D position, double direction){
         this.position =  new Point2D.Double(position.getX(), position.getY());;
         this.rotation = direction;
-        this.hitbox = new Rectangle2D.Double(0,0,height,width); //todo height and width are switched for some reason??????????????????
-        this.body = new Rectangle2D.Double(0,0,height,width);
+        this.hitbox = new Ellipse2D.Double(0,0,width,height); //todo height and width are switched for some reason??????????????????
+        this.body = new Rectangle2D.Double(0,0,width,height);
 
         this.maxBounces = 1;
     }
@@ -35,14 +36,17 @@ public class Bullet extends GameObject {
 
     @Override
     public void draw(Graphics2D g2d) {
+
         AffineTransform tx = new AffineTransform();
-        tx.translate(position.getX()+(height/2),position.getY()+(width/2)); //this doesn't make any sense
-        tx.rotate(Math.toRadians(rotation));//todo pivot to center of object
+
+        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
+        tx.rotate(Math.toRadians(rotation+90),(width/2),(height/2)); //+90 is necessary for proper rotation
+        tx.translate(0,-50-(height*2)); //extra offset from tank
 
         g2d.setColor(Color.black);
-        g2d.fill(tx.createTransformedShape(body));
+        g2d.draw(tx.createTransformedShape(body));
         g2d.setColor(color);
-//        g2d.fill(tx.createTransformedShape(body));
+        g2d.fill(tx.createTransformedShape(body));
         if (drawHitbox) {
             g2d.setColor(Color.RED);
             g2d.draw(tx.createTransformedShape(hitbox));
