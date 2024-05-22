@@ -1,4 +1,5 @@
 import GameObjects.Arena;
+import GameObjects.GameObject;
 import GameObjects.Tank;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -15,12 +16,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 public class TempMain extends Application {
 
     private ResizableCanvas canvas;
     private Tank tank1;
     private Arena arena;
+    private ArrayList<GameObject> gameObjects;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -32,8 +35,10 @@ public class TempMain extends Application {
         mainPane.setCenter(canvas);
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
+        gameObjects = new ArrayList<>();
         tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
-        arena = new Arena(1000,1000,new Point2D.Double(0,0));
+        gameObjects.add(tank1);
+        gameObjects.add(new Arena(800,800,new Point2D.Double(0,0)));
 
         new AnimationTimer() {
             long last = -1;
@@ -71,7 +76,9 @@ public class TempMain extends Application {
         g2d.draw(new Line2D.Double(0,0,0,1000));
 
         tank1.draw(g2d);
-        arena.draw(g2d);
+        for (GameObject o : gameObjects) {
+            o.draw(g2d);
+        }
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
@@ -80,6 +87,9 @@ public class TempMain extends Application {
 
     private void update(double deltaTime){
         tank1.update(deltaTime);
+        for (GameObject gameObject : gameObjects) {
+            gameObject.update(deltaTime);
+        }
     }
 
     private void keyPressedHandle(KeyEvent e) {
@@ -96,6 +106,8 @@ public class TempMain extends Application {
             tank1.setRotateTurretLeft();
         }else if(e.getCode() == KeyCode.RIGHT){
             tank1.setRotateTurretRight();
+        }else if(e.getCode() == KeyCode.UP){
+            tank1.fireBullet(gameObjects);
         }
     }
     private void keyReleasedHandle(KeyEvent e) {

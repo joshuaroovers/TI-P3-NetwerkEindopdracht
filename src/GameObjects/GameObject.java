@@ -14,6 +14,6 @@ public abstract class GameObject {
     int width;
     Color color;
 
-    public abstract void update(double deltaTime);
+    public abstract void update(double time);
     public abstract void draw(Graphics2D g2d);
 }

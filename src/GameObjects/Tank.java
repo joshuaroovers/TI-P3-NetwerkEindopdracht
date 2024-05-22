@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Tank extends GameObject {
 
@@ -99,7 +100,7 @@ public class Tank extends GameObject {
         turretTx.translate(position.getX()-(width/4),position.getY()-(height/4));
         turretTx.rotate(Math.toRadians(turretRotation), (width/4), (height/4));
 
-        g2d.setColor(color);
+        g2d.setColor(Color.MAGENTA);
         g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0, (width/2), (height/2))));
     }
 
@@ -133,5 +134,9 @@ public class Tank extends GameObject {
     public void stopRotateTurret(){
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
+    }
+
+    public void fireBullet(ArrayList<GameObject> gameObjects) {
+        gameObjects.add(new Bullet(position, turretRotation));
     }
 }

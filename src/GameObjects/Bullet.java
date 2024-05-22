@@ -2,7 +2,6 @@ package GameObjects;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -13,34 +12,40 @@ public class Bullet extends GameObject {
     private final int width = 10;
     private final int height = 20;
 
-    private final int speed = 10;
-    private int bounceCount;
+    private final int speed = 500;
+    private int maxBounces;
 
-    public Bullet(Point2D pos, double direction, int bounceCount){
-        this.position =  new Point2D.Double(position.getX()-(width/2), position.getY()-(height/2));;
+    public Bullet(Point2D position, double direction){
+        this.position =  new Point2D.Double(position.getX(), position.getY());;
         this.rotation = direction;
-        this.hitbox = new Rectangle2D.Double(0,0,width,height);
-        this.body = new Rectangle2D.Double(0,0,width,height);
+        this.hitbox = new Rectangle2D.Double(0,0,height,width); //todo height and width are switched for some reason??????????????????
+        this.body = new Rectangle2D.Double(0,0,height,width);
 
-        this.bounceCount = 0;
+        this.maxBounces = 1;
     }
 
     @Override
-    public void update(double deltaTime) {
+    public void update(double time) {
+        double moveY = speed*time * Math.sin(Math.toRadians(rotation));
+        double moveX = speed*time * Math.cos(Math.toRadians(rotation));
 
+
+        this.position = new Point2D.Double(this.position.getX()+moveX, this.position.getY()+moveY);
     }
 
     @Override
     public void draw(Graphics2D g2d) {
         AffineTransform tx = new AffineTransform();
-        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
+        tx.translate(position.getX()+(height/2),position.getY()+(width/2)); //this doesn't make any sense
+        tx.rotate(Math.toRadians(rotation));//todo pivot to center of object
+
         g2d.setColor(Color.black);
-        g2d.draw(tx.createTransformedShape(body));
-        g2d.setColor(color);
         g2d.fill(tx.createTransformedShape(body));
+        g2d.setColor(color);
+//        g2d.fill(tx.createTransformedShape(body));
         if (drawHitbox) {
             g2d.setColor(Color.RED);
-            g2d.draw(hitbox);
+            g2d.draw(tx.createTransformedShape(hitbox));
         }
     }
 }
