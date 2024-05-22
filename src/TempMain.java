@@ -1,3 +1,4 @@
+import GameObjects.Arena;
 import GameObjects.Tank;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -19,6 +20,7 @@ public class TempMain extends Application {
 
     private ResizableCanvas canvas;
     private Tank tank1;
+    private Arena arena;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -31,6 +33,7 @@ public class TempMain extends Application {
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
         tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
+        arena = new Arena(1000,1000,new Point2D.Double(0,0));
 
         new AnimationTimer() {
             long last = -1;
@@ -68,6 +71,7 @@ public class TempMain extends Application {
         g2d.draw(new Line2D.Double(0,0,0,1000));
 
         tank1.draw(g2d);
+        arena.draw(g2d);
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-25,-25, 50,50));

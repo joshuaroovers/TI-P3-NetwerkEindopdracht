@@ -35,9 +35,9 @@ public class Bullet extends GameObject {
         AffineTransform tx = new AffineTransform();
         tx.translate(position.getX()-(width/2),position.getY()-(height/2));
         g2d.setColor(Color.black);
-        g2d.draw(body);
+        g2d.draw(tx.createTransformedShape(body));
         g2d.setColor(color);
-        g2d.fill(body);
+        g2d.fill(tx.createTransformedShape(body));
         if (drawHitbox) {
             g2d.setColor(Color.RED);
             g2d.draw(hitbox);
