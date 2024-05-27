@@ -1,7 +1,4 @@
-import GameObjects.Arena;
-import GameObjects.GameObject;
-import GameObjects.Tank;
-import GameObjects.Wall;
+import GameObjects.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -20,8 +17,7 @@ public class TempMain extends Application {
 
     private ResizableCanvas canvas;
     private Tank tank1;
-    private Arena arena;
-    private ArrayList<GameObject> gameObjects;
+    private Game game;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -33,13 +29,15 @@ public class TempMain extends Application {
         mainPane.setCenter(canvas);
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
-        gameObjects = new ArrayList<>();
 
-        Tank tank = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
-        tank1 = tank;
-        gameObjects.add(tank);
+        ArrayList<GameObject> gameObjects = new ArrayList<>();
+
+        tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
+
+        gameObjects.add(tank1);
         gameObjects.add(new Tank(new Point2D.Double(200,200), 0, 200, Color.GREEN));
-        arena = new Arena(new Point2D.Double(0,0),400,400);
+        Arena arena = new Arena(new Point2D.Double(0,0),400,400);
+        game = new Game(arena,gameObjects);
         for (Wall wall : arena.getWalls()) {
             gameObjects.add(wall);
         }
@@ -62,7 +60,7 @@ public class TempMain extends Application {
         scene.setOnKeyReleased(e -> keyReleasedHandle(e));
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GameObjects.Tank Game");
+        primaryStage.setTitle("GameObjects.Tank GameObjects.Game");
         primaryStage.show();
         draw(g2d);
     }
@@ -80,9 +78,7 @@ public class TempMain extends Application {
         g2d.draw(new Line2D.Double(0,0,0,1000));
 
 
-        for (GameObject o : gameObjects) {
-            o.draw(g2d);
-        }
+        game.draw(g2d);
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
@@ -90,9 +86,7 @@ public class TempMain extends Application {
     }
 
     private void update(double deltaTime){
-        for (GameObject gameObject : gameObjects) {
-            gameObject.update(deltaTime, gameObjects);
-        }
+        game.update(deltaTime);
     }
 
     private void keyPressedHandle(KeyEvent e) {
@@ -110,7 +104,7 @@ public class TempMain extends Application {
         }else if(e.getCode() == KeyCode.RIGHT){
             tank1.setRotateTurretRight();
         }else if(e.getCode() == KeyCode.UP){
-            tank1.fireBullet(gameObjects);
+            tank1.fireBullet(game.getGameObjects());
         }
     }
     private void keyReleasedHandle(KeyEvent e) {

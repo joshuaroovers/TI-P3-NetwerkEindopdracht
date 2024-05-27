@@ -1,7 +1,6 @@
 package GameObjects;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -42,7 +41,7 @@ public class Tank extends GameObject implements Destructible{
     }
 
     @Override
-    public void update(double time, ArrayList<GameObject> gameObjects) {
+    public void update(double time, ArrayList<GameObject> gameObjects, Game game) {
         boolean isColliding = false;
         double newRotation = rotation;
 

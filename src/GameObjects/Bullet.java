@@ -24,7 +24,7 @@ public class Bullet extends GameObject implements Destructible {
     }
 
     @Override
-    public void update(double time, ArrayList<GameObject> gameObjects) {
+    public void update(double time, ArrayList<GameObject> gameObjects, Game game) {
 
         boolean isColliding = false;
         double xRotation = rotation;

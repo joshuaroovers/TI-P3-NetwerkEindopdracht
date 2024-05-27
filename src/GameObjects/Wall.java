@@ -2,7 +2,6 @@ package GameObjects;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class Wall extends GameObject{
     }
 
     @Override
-    public void update(double time, ArrayList<GameObject> gameObjects) {
+    public void update(double time, ArrayList<GameObject> gameObjects, Game game) {
 
     }
 
