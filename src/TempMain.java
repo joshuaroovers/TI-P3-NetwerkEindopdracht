@@ -38,7 +38,7 @@ public class TempMain extends Application {
         gameObjects = new ArrayList<>();
         tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
         gameObjects.add(tank1);
-        gameObjects.add(new Arena(800,800,new Point2D.Double(0,0)));
+        gameObjects.add(new Arena(1200,1000,new Point2D.Double(0,0)));
 
         new AnimationTimer() {
             long last = -1;
