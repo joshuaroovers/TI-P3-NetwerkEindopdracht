@@ -17,6 +17,7 @@ public class Tank extends GameObject {
     private double turretRotation;
     private boolean isRotatingTurretRight;
     private boolean isRotatingTurretLeft;
+    private Timer timer = new Timer(1000);
 
     public Tank(Point2D position, double rotation, int size, Color color) {
         this.position = new Point2D.Double(position.getX(), position.getY());
@@ -137,6 +138,9 @@ public class Tank extends GameObject {
     }
 
     public void fireBullet(ArrayList<GameObject> gameObjects) {
+        if (timer.timeout()){
         gameObjects.add(new Bullet(position, turretRotation));
+        timer.setInterval(500);
+        }
     }
 }
