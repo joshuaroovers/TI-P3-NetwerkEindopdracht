@@ -84,21 +84,7 @@ public class TempMain extends Application {
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
-
-        Area tankArea = new Area(tank1.getCollider());
-        g2d.setColor(Color.blue);
-        g2d.draw(tankArea);
-        for (GameObject gameObject : gameObjects) {
-            if(gameObject != tank1){
-                Area area = new Area(((Wall)gameObject).getCollider());
-                g2d.setColor(Color.blue);
-                g2d.draw(area);
-
-                area.intersect(tankArea);
-                g2d.setColor(Color.cyan);
-                g2d.fill(area);
-            }
-        }
+        
     }
 
     private void update(double deltaTime){
