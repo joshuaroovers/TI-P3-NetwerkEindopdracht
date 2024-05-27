@@ -1,6 +1,7 @@
 import GameObjects.Arena;
 import GameObjects.GameObject;
 import GameObjects.Tank;
+import GameObjects.Wall;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,10 +13,7 @@ import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.util.ArrayList;
 
 public class TempMain extends Application {
@@ -36,9 +34,13 @@ public class TempMain extends Application {
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
 
         gameObjects = new ArrayList<>();
+
         tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
         gameObjects.add(tank1);
-        gameObjects.add(new Arena(1200,1000,new Point2D.Double(0,0)));
+        Arena arena = new Arena(new Point2D.Double(0,0),400,400);
+        for (Wall wall : arena.getWalls()) {
+            gameObjects.add(wall);
+        }
 
         new AnimationTimer() {
             long last = -1;
@@ -83,17 +85,31 @@ public class TempMain extends Application {
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
 
+        Area tankArea = new Area(tank1.getCollider());
+        g2d.setColor(Color.blue);
+        g2d.draw(tankArea);
+        for (GameObject gameObject : gameObjects) {
+            if(gameObject != tank1){
+                Area area = new Area(((Wall)gameObject).getCollider());
+                g2d.setColor(Color.blue);
+                g2d.draw(area);
+
+                area.intersect(tankArea);
+                g2d.setColor(Color.cyan);
+                g2d.fill(area);
+            }
+        }
     }
 
     private void update(double deltaTime){
-        tank1.update(deltaTime);
+        tank1.update(deltaTime, gameObjects);
         for (GameObject gameObject : gameObjects) {
-            gameObject.update(deltaTime);
+            gameObject.update(deltaTime, gameObjects);
         }
     }
 
     private void keyPressedHandle(KeyEvent e) {
-        System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
+//        System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
         if(e.getCode() == KeyCode.W){
             tank1.setMovement(true,true);
         } else if(e.getCode() == KeyCode.S){
@@ -111,7 +127,7 @@ public class TempMain extends Application {
         }
     }
     private void keyReleasedHandle(KeyEvent e) {
-        System.out.println("key released: "+ e.getCharacter() + " :" + e.getCode());
+//        System.out.println("key released: "+ e.getCharacter() + " :" + e.getCode());
         if(e.getCode() == KeyCode.W || e.getCode() == KeyCode.S){
             tank1.stopMovement();
         }else if(e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){

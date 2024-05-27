@@ -1,10 +1,8 @@
 package GameObjects;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
+import java.util.ArrayList;
 
 public class Bullet extends GameObject {
 
@@ -19,29 +17,26 @@ public class Bullet extends GameObject {
     public Bullet(Point2D position, double direction){
         this.position =  new Point2D.Double(position.getX(), position.getY());;
         this.rotation = direction;
-        this.hitbox = new Ellipse2D.Double(0,0,width,height); //todo height and width are switched for some reason??????????????????
+        this.hitbox = new Rectangle2D.Double(0,0,width,height); //todo height and width are switched for some reason??????????????????
         this.body = new Rectangle2D.Double(0,0,width,height);
 
         this.maxBounces = 1;
     }
 
     @Override
-    public void update(double time) {
+    public void update(double time, ArrayList<GameObject> gameObjects) {
         double moveY = speed*time * Math.sin(Math.toRadians(rotation));
         double moveX = speed*time * Math.cos(Math.toRadians(rotation));
 
 
         this.position = new Point2D.Double(this.position.getX()+moveX, this.position.getY()+moveY);
+
     }
 
     @Override
     public void draw(Graphics2D g2d) {
 
-        AffineTransform tx = new AffineTransform();
-
-        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
-        tx.rotate(Math.toRadians(rotation+90),(width/2),(height/2)); //+90 is necessary for proper rotation
-        tx.translate(0,-50-(height*2)); //extra offset from tank
+        AffineTransform tx = getTransform();
 
         g2d.setColor(Color.black);
         g2d.draw(tx.createTransformedShape(body));
@@ -51,5 +46,33 @@ public class Bullet extends GameObject {
             g2d.setColor(Color.RED);
             g2d.draw(tx.createTransformedShape(hitbox));
         }
+    }
+
+    @Override
+    public AffineTransform getTransform() {
+        AffineTransform tx = new AffineTransform();
+
+        tx.translate(position.getX()-(width/2),position.getY()-(height/2));
+        tx.rotate(Math.toRadians(rotation+90),(width/2),(height/2)); //+90 is necessary for proper rotation
+        tx.translate(0,-50-(height*2)); //extra offset from tank
+
+        return tx;
+    }
+
+    @Override
+    public boolean getCollision(Shape collider) {
+        Area objectArea = new Area(collider);
+        Area bulletArea = new Area(getCollider());
+        bulletArea.intersect(objectArea);
+        if(!bulletArea.isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public Shape getCollider() {
+        return getTransform().createTransformedShape(hitbox);
     }
 }
