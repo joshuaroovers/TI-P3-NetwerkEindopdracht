@@ -17,7 +17,7 @@ public class Bullet extends GameObject {
     public Bullet(Point2D position, double direction){
         this.position =  new Point2D.Double(position.getX(), position.getY());;
         this.rotation = direction;
-        this.hitbox = new Rectangle2D.Double(0,0,width,height); //todo height and width are switched for some reason??????????????????
+        this.hitbox = new Ellipse2D.Double(0,0,width,height); //todo height and width are switched for some reason??????????????????
         this.body = new Rectangle2D.Double(0,0,width,height);
 
         this.maxBounces = 1;
@@ -25,12 +25,26 @@ public class Bullet extends GameObject {
 
     @Override
     public void update(double time, ArrayList<GameObject> gameObjects) {
+
+
+
         double moveY = speed*time * Math.sin(Math.toRadians(rotation));
         double moveX = speed*time * Math.cos(Math.toRadians(rotation));
 
 
-        this.position = new Point2D.Double(this.position.getX()+moveX, this.position.getY()+moveY);
+        Point2D newPosition = new Point2D.Double(this.position.getX()+moveX, this.position.getY()+moveY);
 
+        boolean isColliding = false;
+        for (GameObject gameObject : gameObjects) {
+            if(gameObject.getClass() == Wall.class){
+                if(gameObject.getCollision(getCollider())){
+                    isColliding = true;
+                }
+            }
+        }
+        if(!isColliding){
+            this.position = newPosition;
+        }
     }
 
     @Override

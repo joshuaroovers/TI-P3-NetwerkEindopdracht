@@ -84,7 +84,7 @@ public class TempMain extends Application {
 
         g2d.setColor(Color.RED);
         g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
-        
+
     }
 
     private void update(double deltaTime){
