@@ -8,9 +8,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Tank extends GameObject {
+public class Tank extends GameObject implements Destructible{
 
-    private final int speed = 100;
+    private final int speed = 200;
     private boolean isMoving;
     private boolean isMovingUp;
     private boolean isRotatingRight;
@@ -83,8 +83,11 @@ public class Tank extends GameObject {
         tempTx.rotate(Math.toRadians(newRotation), (width/2),(height/2));
 
         for (GameObject gameObject : gameObjects) {
-            if(gameObject != this && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
+            if(gameObject != this &&gameObject.getClass() != Bullet.class && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
                 isColliding = true;
+            }else if(gameObject.getClass() == Bullet.class && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
+                this.destroy(gameObjects);
+                ((Bullet) gameObject).destroy(gameObjects);
             }
         }
         if(!isColliding){
@@ -137,22 +140,6 @@ public class Tank extends GameObject {
         return tx;
     }
 
-    @Override
-    public boolean getCollision(Shape collider) {
-        Area objectArea = new Area(collider);
-        Area tankArea = new Area(getCollider());
-        tankArea.intersect(objectArea);
-        if(!tankArea.isEmpty()){
-            return true;
-        }else{
-            return false;
-        }
-    }
-    
-    @Override
-    public Shape getCollider(){
-        return getTransform().createTransformedShape(hitbox);
-    }
 
     public void setMovement(boolean move, boolean moveUp) {
         this.isMoving = move;
@@ -191,5 +178,13 @@ public class Tank extends GameObject {
         gameObjects.add(new Bullet(position, turretRotation));
         timer.setInterval(500);
         }
+    }
+
+    @Override
+    public void destroy(ArrayList<GameObject> gameObjects) {
+        System.out.println("destroy "+this.getClass());
+        if(gameObjects.remove(this)){
+            System.out.println("removed: "+this.getClass()+" "+this);
+        };
     }
 }

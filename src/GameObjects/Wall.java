@@ -12,8 +12,6 @@ public class Wall extends GameObject{
         this.position = posistion;
         this.body = new Rectangle2D.Double(0,0,width,height);
         this.hitbox = new Rectangle2D.Double(0,0,width,height);
-
-        System.out.println(getTransform().createTransformedShape(this.hitbox));
     }
 
     @Override
@@ -41,20 +39,4 @@ public class Wall extends GameObject{
         return tx;
     }
 
-    @Override
-    public boolean getCollision(Shape collider) {
-        Area objectArea = new Area(collider);
-        Area wallArea = new Area(getCollider());
-        wallArea.intersect(objectArea);
-        if(!wallArea.isEmpty()){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    @Override
-    public Shape getCollider(){
-        return getTransform().createTransformedShape(hitbox);
-    }
 }

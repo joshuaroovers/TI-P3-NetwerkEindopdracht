@@ -1,6 +1,7 @@
 package GameObjects;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -19,6 +20,17 @@ public abstract class GameObject {
     public abstract void update(double time, ArrayList<GameObject> gameObjects);
     public abstract void draw(Graphics2D g2d);
     public abstract AffineTransform getTransform();
-    public abstract boolean getCollision(Shape collider);
-    public abstract Shape getCollider();
+    public boolean getCollision(Shape collider){
+        Area colliderArea = new Area(collider);
+        Area objectArea = new Area(getCollider());
+        objectArea.intersect(colliderArea);
+        if(!objectArea.isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
+    };
+    public Shape getCollider(){
+        return this.getTransform().createTransformedShape(this.hitbox);
+    };
 }

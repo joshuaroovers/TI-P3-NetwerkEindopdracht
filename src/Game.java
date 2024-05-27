@@ -9,6 +9,9 @@ public class Game {
 
     public Game(Arena arena,ArrayList<GameObject> gameObjects){
         this.arena = arena;
+         for (GameObject gameObject : arena.getWalls()) {
+            gameObjects.add(gameObject);
+        }
         this.gameObjects = gameObjects;
     }
 }

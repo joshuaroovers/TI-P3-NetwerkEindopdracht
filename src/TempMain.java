@@ -35,9 +35,11 @@ public class TempMain extends Application {
 
         gameObjects = new ArrayList<>();
 
-        tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
-        gameObjects.add(tank1);
-        Arena arena = new Arena(new Point2D.Double(0,0),400,400);
+        Tank tank = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
+        tank1 = tank;
+        gameObjects.add(tank);
+        gameObjects.add(new Tank(new Point2D.Double(200,200), 0, 200, Color.GREEN));
+        arena = new Arena(new Point2D.Double(0,0),400,400);
         for (Wall wall : arena.getWalls()) {
             gameObjects.add(wall);
         }
@@ -77,7 +79,7 @@ public class TempMain extends Application {
         g2d.setColor(Color.RED);
         g2d.draw(new Line2D.Double(0,0,0,1000));
 
-        tank1.draw(g2d);
+
         for (GameObject o : gameObjects) {
             o.draw(g2d);
         }
@@ -88,7 +90,6 @@ public class TempMain extends Application {
     }
 
     private void update(double deltaTime){
-        tank1.update(deltaTime, gameObjects);
         for (GameObject gameObject : gameObjects) {
             gameObject.update(deltaTime, gameObjects);
         }
