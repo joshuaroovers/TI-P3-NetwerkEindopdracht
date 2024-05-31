@@ -1,4 +1,4 @@
-package GameObjects;
+package gameObjects;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

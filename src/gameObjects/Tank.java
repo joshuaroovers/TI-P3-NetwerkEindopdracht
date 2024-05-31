@@ -1,5 +1,6 @@
-package GameObjects;
+package gameObjects;
 
+import javax.imageio.ImageIO;
 import game.Game;
 
 import java.awt.geom.AffineTransform;
@@ -7,6 +8,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Tank extends GameObject implements Destructible{
@@ -20,19 +25,36 @@ public class Tank extends GameObject implements Destructible{
     private boolean isRotatingTurretRight;
     private boolean isRotatingTurretLeft;
     private Timer timer = new Timer(1000);
+    private String bodyColor;
+    private String turretColor;
+    private BufferedImage bodyImage;
+    private BufferedImage turretImage;
 
-    public Tank(Point2D position, double rotation, int size, Color color) {
+    public Tank(Point2D position, double rotation, int size, Color color,String colour) {
+        this.bodyColor = "resources/tankBody_"+ colour+".png";
+        this.turretColor = "resources/tankBarrel_"+colour+".png";
+        try {
+            bodyImage = ImageIO.read(new FileInputStream(bodyColor));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            turretImage = ImageIO.read(new FileInputStream(turretColor));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.position = new Point2D.Double(position.getX(), position.getY());
         this.rotation = rotation+90;
-        this.body = new Rectangle2D.Double(0, 0, size, size);
-        this.hitbox = new Rectangle2D.Double(0, 0, size, size);
+        this.body = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
+        this.hitbox = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
 
         this.color = color;
         this.isMoving = false;
         this.isMovingUp = false;
 
-        this.width = size;
-        this.height = size;
+        this.width = bodyImage.getWidth();
+        this.height = bodyImage.getHeight();
 
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
@@ -116,17 +138,19 @@ public class Tank extends GameObject implements Destructible{
     public void draw(Graphics2D g2d) {
         AffineTransform tankTx = getTransform();
 
-        g2d.setColor(Color.black);
-        g2d.draw(tankTx.createTransformedShape(body));
-        g2d.setColor(color);
-        g2d.fill(tankTx.createTransformedShape(body));
+//        g2d.setColor(Color.black);
+//        g2d.draw(tankTx.createTransformedShape(body));
+//        g2d.setColor(color);
+//        g2d.fill(tankTx.createTransformedShape(body));
+        g2d.drawImage(bodyImage,tankTx,null);
 
         AffineTransform turretTx = new AffineTransform();
-        turretTx.translate(position.getX()-(width/4),position.getY()-(height/4));
-        turretTx.rotate(Math.toRadians(turretRotation), (width/4), (height/4));
+        turretTx.translate(position.getX()-(turretImage.getWidth()/2),position.getY()-(turretImage.getHeight()/2));
+        turretTx.rotate(Math.toRadians(turretRotation), (turretImage.getWidth()/2), (turretImage.getHeight()/2));
 
-        g2d.setColor(Color.MAGENTA);
-        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0, (width/2), (height/2))));
+//        g2d.setColor(Color.MAGENTA);
+//        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0, (width/2), (height/2))));
+        g2d.drawImage(turretImage,turretTx,null);
 
         g2d.setColor(Color.RED);
         g2d.draw(tankTx.createTransformedShape(hitbox.getBounds2D()));

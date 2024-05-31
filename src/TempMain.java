@@ -1,4 +1,4 @@
-import GameObjects.*;
+import gameObjects.*;
 import game.Game;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -33,10 +33,10 @@ public class TempMain extends Application {
 
         ArrayList<GameObject> gameObjects = new ArrayList<>();
 
-        tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE);
+        tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE,"blue");
 
         gameObjects.add(tank1);
-        gameObjects.add(new Tank(new Point2D.Double(200,200), 0, 200, Color.GREEN));
+        gameObjects.add(new Tank(new Point2D.Double(200,200), 0, 200, Color.GREEN,"green"));
         Arena arena = new Arena(new Point2D.Double(0,0),400,400);
         game = new Game(arena,gameObjects);
         for (Wall wall : arena.getWalls()) {

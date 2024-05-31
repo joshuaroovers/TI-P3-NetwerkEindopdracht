@@ -1,14 +1,11 @@
 package game;
 
-import GameObjects.Arena;
-import GameObjects.GameObject;
-import org.jfree.fx.FXGraphics2D;
+import gameObjects.Arena;
+import gameObjects.GameObject;
+import gameObjects.GameObject;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 
 public class Game {
@@ -23,12 +20,12 @@ public class Game {
         }
         this.gameObjects = gameObjects;
 
-        try {
-            BufferedImage tempImage = ImageIO.read(new FileInputStream("resources/spamton.png"));
-            this.image = tempImage;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            BufferedImage tempImage = ImageIO.read(new FileInputStream("resources/tankBody_blue.png"));
+//            this.image = tempImage;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void update(double time) {
