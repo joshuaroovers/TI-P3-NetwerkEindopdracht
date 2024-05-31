@@ -1,5 +1,7 @@
 package GameObjects;
 
+import game.Game;
+
 import java.awt.*;
 import java.awt.geom.*;
 import java.util.ArrayList;

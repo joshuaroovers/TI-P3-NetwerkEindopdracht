@@ -1,4 +1,4 @@
-package GameObjects;
+package game;
 
 import GameObjects.Arena;
 import GameObjects.GameObject;
@@ -43,9 +43,9 @@ public class Game {
         }
 
 
-        AffineTransform tx = new AffineTransform();
-        tx.translate(-image.getWidth()/2,-image.getHeight()/2);
-        g2d.drawImage(image, tx,null);
+//        AffineTransform tx = new AffineTransform();
+//        tx.translate(-image.getWidth()/2,-image.getHeight()/2);
+//        g2d.drawImage(image, tx,null);
     }
 
     public ArrayList<GameObject> getGameObjects() {

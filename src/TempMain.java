@@ -1,4 +1,5 @@
 import GameObjects.*;
+import game.Game;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -60,7 +61,7 @@ public class TempMain extends Application {
         scene.setOnKeyReleased(e -> keyReleasedHandle(e));
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("GameObjects.Tank GameObjects.Game");
+        primaryStage.setTitle("GameObjects.Tank game.Game");
         primaryStage.show();
         draw(g2d);
     }
