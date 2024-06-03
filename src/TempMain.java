@@ -1,4 +1,4 @@
-import GameObjects.*;
+import gameObjects.*;
 import game.Game;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;

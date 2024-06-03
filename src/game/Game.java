@@ -1,12 +1,10 @@
 package game;
 
-import GameObjects.Arena;
-import GameObjects.GameObject;
-import org.jfree.fx.FXGraphics2D;
+import gameObjects.Arena;
+import gameObjects.GameObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.ArrayList;
