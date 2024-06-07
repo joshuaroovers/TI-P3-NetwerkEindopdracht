@@ -2,7 +2,6 @@ package game;
 
 import gameObjects.Arena;
 import gameObjects.GameObject;
-import gameObjects.GameObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

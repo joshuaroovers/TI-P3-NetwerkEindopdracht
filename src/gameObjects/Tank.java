@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import game.Game;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -119,7 +120,7 @@ public class Tank extends GameObject implements Destructible{
         }
 
         if(isRotatingTurretRight || isRotatingTurretLeft){
-            System.out.println(turretRotation);
+//            System.out.println(turretRotation);
             if(turretRotation > 360){
                 turretRotation = 0;
             }else if(turretRotation < 0){
@@ -154,6 +155,9 @@ public class Tank extends GameObject implements Destructible{
 
         g2d.setColor(Color.RED);
         g2d.draw(tankTx.createTransformedShape(hitbox.getBounds2D()));
+
+        g2d.setColor(Color.GREEN);
+        g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
     }
 
     @Override
@@ -200,8 +204,8 @@ public class Tank extends GameObject implements Destructible{
 
     public void fireBullet(ArrayList<GameObject> gameObjects) {
         if (timer.timeout()){
-        gameObjects.add(new Bullet(position, turretRotation));
-        timer.setInterval(500);
+            gameObjects.add(new Bullet(position, turretRotation));
+            timer.setInterval(500);
         }
     }
 
