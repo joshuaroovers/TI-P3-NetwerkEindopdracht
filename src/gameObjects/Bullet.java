@@ -36,7 +36,7 @@ public class Bullet extends GameObject implements Destructible {
         this.hitbox = new Ellipse2D.Double(0,0,width,height);
         this.body = new Rectangle2D.Double(0,0,width,height);
 
-        this.maxBounces = 1;
+        this.maxBounces = 2;
         this.speedX = speed;
         this.speedY = speed;
         this.displayRotation = direction;
@@ -50,15 +50,19 @@ public class Bullet extends GameObject implements Destructible {
         for (GameObject gameObject : gameObjects) {
             if(gameObject.getClass() == Wall.class){
                 if(gameObject.getCollision(getCollider()) && gameObject != lastCollision){
-                    lastCollision = gameObject;
-                    if(((Wall) gameObject).isVerticalCollision(getCollider())){
-                        System.out.println("bounce vertical wall");
-                        this.speedX = -speedX;
-                    }else{
-                        System.out.println("bounce horizontal wall");
-                        this.speedY = -speedY;
+                    if (maxBounces !=0){
+                        maxBounces--;
+                        lastCollision = gameObject;
+                        if(((Wall) gameObject).isVerticalCollision(getCollider())){
+                            System.out.println("bounce vertical wall");
+                            this.speedX = -speedX;
+                        }else{
+                            System.out.println("bounce horizontal wall");
+                            this.speedY = -speedY;
+                        }
+                        displayRotation = 180-displayRotation;
                     }
-                    displayRotation = 180-displayRotation;
+                    else {this.destroy(gameObjects);}
                 }
             }else if(gameObject.getClass() == Tank.class){
                 if(gameObject.getCollision(getCollider())){
