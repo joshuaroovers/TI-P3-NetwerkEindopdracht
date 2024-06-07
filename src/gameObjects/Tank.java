@@ -1,12 +1,11 @@
 package gameObjects;
 
 import javax.imageio.ImageIO;
+import javax.sound.midi.Soundbank;
+
 import game.Game;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 public class Tank extends GameObject implements Destructible{
 
     private final int speed = 200;
+    private int length;
     private boolean isMoving;
     private boolean isMovingUp;
     private boolean isRotatingRight;
@@ -30,6 +30,9 @@ public class Tank extends GameObject implements Destructible{
     private String turretColor;
     private BufferedImage bodyImage;
     private BufferedImage turretImage;
+    private GameObject lastCollision;
+    Line2D direction;
+    Rectangle2D direct;
 
     public Tank(Point2D position, double rotation, int size, Color color,String colour) {
         this.bodyColor = "resources/tankBody_"+ colour+".png";
@@ -63,6 +66,8 @@ public class Tank extends GameObject implements Destructible{
         this.turretRotation = rotation+90;
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
+
+        this.length = 100;
     }
 
     @Override
@@ -114,6 +119,19 @@ public class Tank extends GameObject implements Destructible{
                 ((Bullet) gameObject).destroy(gameObjects);
             }
         }
+        for (GameObject gameObject : gameObjects) {
+            if(gameObject.getClass() == Wall.class){
+                    if (((Wall)gameObject).getCollision(getDirectTransform().createTransformedShape(direct))){
+                        length -=5;
+                        System.out.println("yes");
+                    }
+                    else {
+                        length++;
+                        System.out.println("no");
+                    }
+            }
+        }
+
         if(!isColliding){
             this.rotation = newRotation;
             this.position = newPosition;
@@ -139,18 +157,10 @@ public class Tank extends GameObject implements Destructible{
     public void draw(Graphics2D g2d) {
         AffineTransform tankTx = getTransform();
 
-//        g2d.setColor(Color.black);
-//        g2d.draw(tankTx.createTransformedShape(body));
-//        g2d.setColor(color);
-//        g2d.fill(tankTx.createTransformedShape(body));
         g2d.drawImage(bodyImage,tankTx,null);
 
-        AffineTransform turretTx = new AffineTransform();
-        turretTx.translate(position.getX()-(turretImage.getWidth()/2),position.getY()-(turretImage.getHeight()/2));
-        turretTx.rotate(Math.toRadians(turretRotation), (turretImage.getWidth()/2), (turretImage.getHeight()/2));
+        AffineTransform turretTx = getTurretTransform();
 
-//        g2d.setColor(Color.MAGENTA);
-//        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0, (width/2), (height/2))));
         g2d.drawImage(turretImage,turretTx,null);
 
         g2d.setColor(Color.RED);
@@ -158,7 +168,27 @@ public class Tank extends GameObject implements Destructible{
 
         g2d.setColor(Color.GREEN);
         g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
+
+//        direction = new Line2D.Double(0,0,length,0);
+        direct = new  Rectangle2D.Double(0,0,length,1);
+
+//        g2d.draw(turretTx.createTransformedShape(direction));
+        g2d.draw(getDirectTransform().createTransformedShape(direct));
     }
+
+    private AffineTransform getTurretTransform() {
+        AffineTransform turretTx = new AffineTransform();
+        turretTx.translate(position.getX()-(turretImage.getWidth()/2),position.getY()-(turretImage.getHeight()/2));
+        turretTx.rotate(Math.toRadians(turretRotation), (turretImage.getWidth()/2), (turretImage.getHeight()/2));
+        return turretTx;
+    }
+
+    private AffineTransform getDirectTransform() {
+        AffineTransform directTx = getTurretTransform();
+        directTx.translate((turretImage.getWidth()/2),(turretImage.getHeight()/2));
+        return directTx;
+    }
+
 
     @Override
     public AffineTransform getTransform() {

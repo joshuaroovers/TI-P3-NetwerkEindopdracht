@@ -7,6 +7,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public abstract class GameObject {
@@ -33,5 +34,5 @@ public abstract class GameObject {
     };
     public Shape getCollider(){
         return this.getTransform().createTransformedShape(this.hitbox);
-    };
+    }
 }
