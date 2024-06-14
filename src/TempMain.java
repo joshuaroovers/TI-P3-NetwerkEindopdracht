@@ -10,8 +10,12 @@ import javafx.stage.Stage;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class TempMain extends Application {
@@ -19,6 +23,7 @@ public class TempMain extends Application {
     private ResizableCanvas canvas;
     private Tank tank1;
     private Game game;
+    private BufferedImage background ;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -29,7 +34,11 @@ public class TempMain extends Application {
         canvas = new ResizableCanvas(g -> draw(g), mainPane);
         mainPane.setCenter(canvas);
         FXGraphics2D g2d = new FXGraphics2D(canvas.getGraphicsContext2D());
-
+        try {
+        background = ImageIO.read(new FileInputStream("resources/tanks_background.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         ArrayList<GameObject> gameObjects = new ArrayList<>();
 
@@ -72,6 +81,9 @@ public class TempMain extends Application {
         g2d.clearRect(0, 0, (int)canvas.getWidth(), (int)canvas.getHeight());
         g2d.translate((int)canvas.getWidth()/2, (int)canvas.getHeight()/2);
         g2d.scale(1,-1);
+
+        g2d.setPaint(new TexturePaint(background, new Rectangle2D.Double(0-(canvas.getWidth()/2),0-(canvas.getHeight()/2),background.getWidth(),background.getHeight())));
+        g2d.fill(new Rectangle2D.Double(0-(canvas.getWidth()/2),0-(canvas.getHeight()/2),canvas.getWidth(),canvas.getHeight()));
 
         g2d.setColor(Color.BLUE);
         g2d.draw(new Line2D.Double(0,0,1000,0));
