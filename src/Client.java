@@ -74,7 +74,7 @@ public class Client extends Application {
     {
         try
         {
-            serverSocket = new Socket("145.49.29.24", 8000);
+            serverSocket = new Socket("localhost", 8000);
 
             output = new ObjectOutputStream(serverSocket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
@@ -123,25 +123,15 @@ public class Client extends Application {
     private void keyPressedHandle(KeyEvent e) {
 
         if(e.getCode() != lastKeyPress){
-            System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
-            if(e.getCode() == KeyCode.W ||
-                    e.getCode() == KeyCode.S ||
+            if(e.getCode() == KeyCode.W || e.getCode() == KeyCode.S ||
                     e.getCode() == KeyCode.A ||
                     e.getCode() == KeyCode.D ||
                     e.getCode() == KeyCode.UP ||
                     e.getCode() == KeyCode.LEFT ||
                     e.getCode() == KeyCode.RIGHT){
+                System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
                 lastKeyPress = e.getCode();
-                try
-                {
-                    KeyInput input = new KeyInput(e.getCode(), true);
-                    output.reset();
-                    output.writeObject(input);
-                    output.flush();
-                } catch (IOException ex)
-                {
-                    throw new RuntimeException(ex);
-                }
+                sendKeyInput(e.getCode(), true);
             }
         }
     }
@@ -157,21 +147,18 @@ public class Client extends Application {
             if(lastKeyPress == e.getCode()){
                 lastKeyPress = null;
             }
-            try {
-                KeyInput input = new KeyInput(e.getCode(), false);
-                output.reset();
-                output.writeObject(input);
-                output.flush();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            sendKeyInput(e.getCode(), false);
         }
-        if(e.getCode() == KeyCode.W || e.getCode() == KeyCode.S){
-//            tank.stopMovement();
-        }else if(e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){
-//            tank.stopRotate();
-        }else if(e.getCode() == KeyCode.LEFT || e.getCode() == KeyCode.RIGHT){
-//            tank.stopRotateTurret();
+    }
+
+    private void sendKeyInput(KeyCode keyCode, boolean isPress){
+        try {
+            KeyInput input = new KeyInput(keyCode, isPress);
+            output.reset();
+            output.writeObject(input);
+            output.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
