@@ -65,9 +65,9 @@ public class Server {
                         clientOos.writeObject(game);
                         clientOos.flush();
                     }else{
-                        client.close();
                         clients.remove(client);
                         oos.remove(client);
+                        client.close();
                     }
 
                 } catch (IOException e) {
@@ -120,8 +120,8 @@ public class Server {
 
             }
 
-            client.close();
             clients.remove(client);
+            client.close();
             oos.remove(client);
 //            tank.destroy(game.getGameObjects());
         } catch (IOException | ClassNotFoundException e) {

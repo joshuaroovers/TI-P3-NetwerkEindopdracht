@@ -27,7 +27,8 @@ import java.util.ArrayList;
 public class Client extends Application {
     private ResizableCanvas canvas;
     private Game game;
-    private AnimationTimer animationTimer;
+
+    private KeyCode lastKeyPress;
 
     private FXGraphics2D g2d;
     private Socket serverSocket;
@@ -73,7 +74,7 @@ public class Client extends Application {
     {
         try
         {
-            serverSocket = new Socket("localhost", 8000);
+            serverSocket = new Socket("145.49.29.24", 8000);
 
             output = new ObjectOutputStream(serverSocket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
@@ -118,47 +119,30 @@ public class Client extends Application {
 
     }
 
-//    private void update(double deltaTime){
-//        game.update(deltaTime);
-//    }
 
     private void keyPressedHandle(KeyEvent e) {
-        System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
-        if(e.getCode() == KeyCode.W ||
-            e.getCode() == KeyCode.S ||
-            e.getCode() == KeyCode.A ||
-            e.getCode() == KeyCode.D ||
-            e.getCode() == KeyCode.UP ||
-            e.getCode() == KeyCode.LEFT ||
-            e.getCode() == KeyCode.RIGHT){
 
-            try
-            {
-                KeyInput input = new KeyInput(e.getCode(), true);
-                output.reset();
-                output.writeObject(input);
-                output.flush();
-            } catch (IOException ex)
-            {
-                throw new RuntimeException(ex);
+        if(e.getCode() != lastKeyPress){
+            System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
+            if(e.getCode() == KeyCode.W ||
+                    e.getCode() == KeyCode.S ||
+                    e.getCode() == KeyCode.A ||
+                    e.getCode() == KeyCode.D ||
+                    e.getCode() == KeyCode.UP ||
+                    e.getCode() == KeyCode.LEFT ||
+                    e.getCode() == KeyCode.RIGHT){
+                lastKeyPress = e.getCode();
+                try
+                {
+                    KeyInput input = new KeyInput(e.getCode(), true);
+                    output.reset();
+                    output.writeObject(input);
+                    output.flush();
+                } catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
             }
-        }
-
-
-        if(e.getCode() == KeyCode.W){
-//            tank.setMovement(true,true);
-        } else if(e.getCode() == KeyCode.S){
-//            tank.setMovement(true,false);
-        }else if(e.getCode() == KeyCode.A){
-//            tank.setRotateLeft();
-        }else if(e.getCode() == KeyCode.D){
-//            tank.setRotateRight();
-        }else if(e.getCode() == KeyCode.LEFT){
-//            tank.setRotateTurretLeft();
-        }else if(e.getCode() == KeyCode.RIGHT){
-//            tank.setRotateTurretRight();
-        }else if(e.getCode() == KeyCode.UP){
-//            tank.fireBullet(game.getGameObjects());
         }
     }
     private void keyReleasedHandle(KeyEvent e) {
@@ -170,7 +154,9 @@ public class Client extends Application {
             e.getCode() == KeyCode.UP ||
             e.getCode() == KeyCode.LEFT ||
             e.getCode() == KeyCode.RIGHT) {
-
+            if(lastKeyPress == e.getCode()){
+                lastKeyPress = null;
+            }
             try {
                 KeyInput input = new KeyInput(e.getCode(), false);
                 output.reset();

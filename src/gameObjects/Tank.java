@@ -80,7 +80,7 @@ public class Tank extends GameObject implements Destructible, Serializable {
 
     @Override
     public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
-        System.out.println("updating Tank");
+//        System.out.println("updating Tank");
         boolean isColliding = false;
         double newRotation = rotation;
 
