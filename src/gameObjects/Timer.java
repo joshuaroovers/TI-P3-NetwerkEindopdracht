@@ -1,6 +1,8 @@
 package gameObjects;
 
-public class Timer {
+import java.io.Serializable;
+
+public class Timer implements Serializable {
     private int interval;
     private long lasttick;
 

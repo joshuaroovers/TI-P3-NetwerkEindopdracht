@@ -1,7 +1,6 @@
 package gameObjects;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.Soundbank;
 
 import game.Game;
 
@@ -9,12 +8,12 @@ import java.awt.geom.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Tank extends GameObject implements Destructible{
+public class Tank extends GameObject implements Destructible, Serializable {
 
     private final int speed = 200;
     private int length;
@@ -26,30 +25,36 @@ public class Tank extends GameObject implements Destructible{
     private boolean isRotatingTurretRight;
     private boolean isRotatingTurretLeft;
     private Timer timer = new Timer(1000);
-    private String bodyColor;
-    private String turretColor;
-    private BufferedImage bodyImage;
-    private BufferedImage turretImage;
-    private GameObject lastCollision;
-    Line2D direction;
+    private String bodyImagePath;
+    private String turretImagePath;
+    private final int turretWidth;
+    private final int turretHeight;
+
     Rectangle2D direct;
 
-    public Tank(Point2D position, double rotation, int size, Color color,String colour) {
-        this.bodyColor = "resources/tankBody_"+ colour+".png";
-        this.turretColor = "resources/tankBarrel_"+colour+".png";
+
+    public Tank(Point2D position, Color color,String colour) {
+
+        this.bodyImagePath = "resources/tankBody_"+ colour+".png";
+        this.turretImagePath = "resources/tankBarrel_"+colour+".png";
+
+        BufferedImage bodyImage;
+        BufferedImage turretImage;
+
         try {
-            bodyImage = ImageIO.read(new FileInputStream(bodyColor));
+            bodyImage = ImageIO.read(new FileInputStream(bodyImagePath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         try {
-            turretImage = ImageIO.read(new FileInputStream(turretColor));
+            turretImage = ImageIO.read(new FileInputStream(turretImagePath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+
         this.position = new Point2D.Double(position.getX(), position.getY());
-        this.rotation = rotation+90;
+        this.rotation = 90;
         this.body = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
         this.hitbox = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
 
@@ -59,6 +64,9 @@ public class Tank extends GameObject implements Destructible{
 
         this.width = bodyImage.getWidth();
         this.height = bodyImage.getHeight();
+
+        this.turretWidth = turretImage.getWidth();
+        this.turretHeight = turretImage.getHeight();
 
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
@@ -71,7 +79,8 @@ public class Tank extends GameObject implements Destructible{
     }
 
     @Override
-    public void update(double time, ArrayList<GameObject> gameObjects, Game game) {
+    public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
+        System.out.println("updating Tank");
         boolean isColliding = false;
         double newRotation = rotation;
 
@@ -83,10 +92,10 @@ public class Tank extends GameObject implements Destructible{
                 newRotation = 360;
             }
             if(isRotatingRight){
-                newRotation--;
+                newRotation -= speed*time;
             }
             if(isRotatingLeft){
-                newRotation++;
+                newRotation += speed*time;
             }
         }
 
@@ -112,25 +121,24 @@ public class Tank extends GameObject implements Destructible{
         tempTx.rotate(Math.toRadians(newRotation), (width/2),(height/2));
 
         for (GameObject gameObject : gameObjects) {
-            if(gameObject != this &&gameObject.getClass() != Bullet.class && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
+            if(gameObject != this && gameObject.getClass() != Bullet.class && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
                 isColliding = true;
             }else if(gameObject.getClass() == Bullet.class && gameObject.getCollision(tempTx.createTransformedShape(hitbox))){
                 this.destroy(gameObjects);
                 ((Bullet) gameObject).destroy(gameObjects);
+            }else if(gameObject.getClass() == Wall.class){
+//                    if (gameObject.getCollision(getDirectTransform().createTransformedShape(direct))){
+//                        length -=5;
+////                        System.out.println("yes");
+//                    }
+//                    else {
+//                        length++;
+////                        System.out.println("no");
+//                    }
             }
+
         }
-        for (GameObject gameObject : gameObjects) {
-            if(gameObject.getClass() == Wall.class){
-                    if (((Wall)gameObject).getCollision(getDirectTransform().createTransformedShape(direct))){
-                        length -=5;
-                        System.out.println("yes");
-                    }
-                    else {
-                        length++;
-                        System.out.println("no");
-                    }
-            }
-        }
+
 
         if(!isColliding){
             this.rotation = newRotation;
@@ -145,53 +153,69 @@ public class Tank extends GameObject implements Destructible{
                 turretRotation = 360;
             }
             if(isRotatingTurretRight){
-                turretRotation--;
+                turretRotation -= speed*time;
             }
             if(isRotatingTurretLeft){
-                turretRotation++;
+                turretRotation += speed*time;
             }
         }
     }
 
     @Override
     public void draw(Graphics2D g2d) {
-        AffineTransform tankTx = getTransform();
 
-        g2d.drawImage(bodyImage,tankTx,null);
+//        BufferedImage bodyImage = null;
+//        BufferedImage turretImage = null;
+//
+//        try {
+//           bodyImage = ImageIO.read(new FileInputStream(bodyImagePath));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        try {
+//            turretImage = ImageIO.read(new FileInputStream(turretImagePath));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        AffineTransform tankTx = getTransform();
+        g2d.setColor(color);
+        g2d.fill(tankTx.createTransformedShape(body));
+
+//        g2d.drawImage(bodyImage,tankTx,null);
 
         AffineTransform turretTx = getTurretTransform();
+        g2d.setColor(color.darker());
+        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0,turretWidth,turretHeight)));
 
-        g2d.drawImage(turretImage,turretTx,null);
+//        g2d.drawImage(turretImage,turretTx,null);
+
+        direct = new Rectangle2D.Double(0,0,length,1);
+        g2d.draw(getDirectTransform().createTransformedShape(direct));
+
 
         g2d.setColor(Color.RED);
         g2d.draw(tankTx.createTransformedShape(hitbox.getBounds2D()));
-
-        g2d.setColor(Color.GREEN);
-        g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
-
-//        direction = new Line2D.Double(0,0,length,0);
-        direct = new  Rectangle2D.Double(0,0,length,1);
-
-//        g2d.draw(turretTx.createTransformedShape(direction));
-        g2d.draw(getDirectTransform().createTransformedShape(direct));
+//        g2d.setColor(Color.GREEN);
+//        g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
     }
 
     private AffineTransform getTurretTransform() {
         AffineTransform turretTx = new AffineTransform();
-        turretTx.translate(position.getX()-(turretImage.getWidth()/2),position.getY()-(turretImage.getHeight()/2));
-        turretTx.rotate(Math.toRadians(turretRotation), (turretImage.getWidth()/2), (turretImage.getHeight()/2));
+        turretTx.translate(position.getX()-(turretWidth/2),position.getY()-(turretHeight/2));
+        turretTx.rotate(Math.toRadians(turretRotation), (turretWidth/2), (turretHeight/2));
         return turretTx;
     }
 
     private AffineTransform getDirectTransform() {
         AffineTransform directTx = getTurretTransform();
-        directTx.translate((turretImage.getWidth()/2),(turretImage.getHeight()/2));
+        directTx.translate((turretWidth/2),(turretHeight/2));
         return directTx;
     }
 
 
     @Override
-    public AffineTransform getTransform() {
+    public synchronized AffineTransform getTransform() {
         AffineTransform tx = new AffineTransform();
         tx.translate(position.getX()-(width/2),position.getY()-(height/2));
         tx.rotate(Math.toRadians(rotation), (width/2),(height/2));
@@ -200,39 +224,39 @@ public class Tank extends GameObject implements Destructible{
     }
 
 
-    public void setMovement(boolean move, boolean moveUp) {
+    public synchronized void setMovement(boolean move, boolean moveUp) {
         this.isMoving = move;
         this.isMovingUp = moveUp;
     }
-    public void stopMovement(){
+    public synchronized void stopMovement(){
         this.isMoving = false;
     }
 
-    public void setRotateRight(){
+    public synchronized void setRotateRight(){
         this.isRotatingRight = true;
     }
 
-    public void setRotateLeft(){
+    public synchronized void setRotateLeft(){
         this.isRotatingLeft = true;
     }
 
-    public void stopRotate(){
+    public synchronized void stopRotate(){
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
     }
 
-    public void setRotateTurretRight() {
+    public synchronized void setRotateTurretRight() {
         this.isRotatingTurretRight = true;
     }
-    public void setRotateTurretLeft() {
+    public synchronized void setRotateTurretLeft() {
         this.isRotatingTurretLeft = true;
     }
-    public void stopRotateTurret(){
+    public synchronized void stopRotateTurret(){
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
     }
 
-    public void fireBullet(ArrayList<GameObject> gameObjects) {
+    public synchronized void fireBullet(CopyOnWriteArrayList<GameObject> gameObjects) {
         if (timer.timeout()){
             gameObjects.add(new Bullet(position, turretRotation));
             timer.setInterval(500);
@@ -240,10 +264,10 @@ public class Tank extends GameObject implements Destructible{
     }
 
     @Override
-    public void destroy(ArrayList<GameObject> gameObjects) {
+    public synchronized void destroy(CopyOnWriteArrayList<GameObject> gameObjects) {
         System.out.println("destroy "+this.getClass());
         if(gameObjects.remove(this)){
             System.out.println("removed: "+this.getClass()+" "+this);
-        };
+        }
     }
 }

@@ -5,30 +5,38 @@ import gameObjects.GameObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Game {
-    private Arena arena;
-    private ArrayList<GameObject> gameObjects;
+public class Game implements Serializable {
+    private CopyOnWriteArrayList<GameObject> gameObjects;
     private BufferedImage image;
 
     public Game(Arena arena, ArrayList<GameObject> gameObjects){
-        this.arena = arena;
+        this.gameObjects = new CopyOnWriteArrayList<>();
          for (GameObject gameObject : arena.getWalls()) {
             gameObjects.add(gameObject);
         }
-        this.gameObjects = gameObjects;
+        this.gameObjects.addAll(gameObjects);
 
-//        try {
-//            BufferedImage tempImage = ImageIO.read(new FileInputStream("resources/tankBody_blue.png"));
-//            this.image = tempImage;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
-    public void update(double time) {
+    public Game(Arena arena) {
+        gameObjects = new CopyOnWriteArrayList<>();
+        gameObjects.addAll(arena.getWalls());
+
+        System.out.println("new game with: ");
+
         for (GameObject gameObject : gameObjects) {
+            System.out.println(gameObject.toString());
+        }
+    }
+
+    public synchronized void update(double time) {
+//        System.out.println("updating gameObjects");
+        for (GameObject gameObject : gameObjects) {
+//            System.out.println("gameobject: " + gameObject);
             gameObject.update(time, gameObjects, this);
         }
     }
@@ -38,13 +46,17 @@ public class Game {
             gameObject.draw(g2d);
         }
 
-
 //        AffineTransform tx = new AffineTransform();
 //        tx.translate(-image.getWidth()/2,-image.getHeight()/2);
 //        g2d.drawImage(image, tx,null);
     }
 
-    public ArrayList<GameObject> getGameObjects() {
+    public synchronized CopyOnWriteArrayList<GameObject> getGameObjects() {
         return gameObjects;
     }
+
+    public synchronized void addGameObject(GameObject gameObject) {
+        gameObjects.add(gameObject);
+    }
+
 }

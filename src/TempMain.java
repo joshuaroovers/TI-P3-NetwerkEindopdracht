@@ -42,10 +42,10 @@ public class TempMain extends Application {
 
         ArrayList<GameObject> gameObjects = new ArrayList<>();
 
-        tank1 = new Tank(new Point2D.Double(0,0),0,100,Color.BLUE,"blue");
+        tank1 = new Tank(new Point2D.Double(0,0),Color.BLUE,"blue");
 
         gameObjects.add(tank1);
-        gameObjects.add(new Tank(new Point2D.Double(200,200), 0, 200, Color.GREEN,"green"));
+        gameObjects.add(new Tank(new Point2D.Double(200,200), Color.GREEN,"green"));
         Arena arena = new Arena(new Point2D.Double(0,0),400,400);
         game = new Game(arena,gameObjects);
         for (Wall wall : arena.getWalls()) {
@@ -99,6 +99,7 @@ public class TempMain extends Application {
     }
 
     private void update(double deltaTime){
+        System.out.println("deltatime: " + deltaTime);
         game.update(deltaTime);
     }
 

@@ -8,9 +8,11 @@ import java.awt.geom.Point2D;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class GameObject {
+public abstract class GameObject implements Serializable {
     Point2D position;
     double rotation;
     Shape body;
@@ -19,7 +21,8 @@ public abstract class GameObject {
     int width;
     Color color;
 
-    public abstract void update(double time, ArrayList<GameObject> gameObjects, Game game);
+    public abstract void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game);
+
     public abstract void draw(Graphics2D g2d);
     public abstract AffineTransform getTransform();
     public boolean getCollision(Shape collider){
@@ -34,5 +37,12 @@ public abstract class GameObject {
     };
     public Shape getCollider(){
         return this.getTransform().createTransformedShape(this.hitbox);
+    }
+
+    @Override
+    public String toString() {
+        return "GameObject{" +
+                "position=" + position +
+                '}';
     }
 }

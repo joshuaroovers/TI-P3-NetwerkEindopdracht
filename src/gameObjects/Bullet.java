@@ -4,9 +4,11 @@ import game.Game;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Bullet extends GameObject implements Destructible {
+public class  Bullet extends GameObject implements Destructible, Serializable {
 
     private boolean drawHitbox = false;
     private int scale =2;
@@ -43,8 +45,8 @@ public class Bullet extends GameObject implements Destructible {
     }
 
     @Override
-    public void update(double time, ArrayList<GameObject> gameObjects, Game game) {
-
+    public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
+        System.out.println("updating Bullet");
         boolean isColliding = false;
 
         for (GameObject gameObject : gameObjects) {
@@ -114,7 +116,7 @@ public class Bullet extends GameObject implements Destructible {
     }
 
     @Override
-    public AffineTransform getTransform() {
+    public synchronized AffineTransform getTransform() {
         AffineTransform tx = new AffineTransform();
 
         tx.translate(position.getX()-(width/2),position.getY()-(height/2));
@@ -124,7 +126,7 @@ public class Bullet extends GameObject implements Destructible {
     }
 
     @Override
-    public void destroy(ArrayList<GameObject> gameObjects) {
+    public synchronized void destroy(CopyOnWriteArrayList<GameObject> gameObjects) {
         System.out.println("destroy "+this.getClass());
         if(gameObjects.remove(this)){
             System.out.println("removed: "+this.getClass()+" "+this);

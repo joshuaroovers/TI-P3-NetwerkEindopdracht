@@ -1,9 +1,10 @@
 package gameObjects;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Arena{
+public class Arena implements Serializable {
     private final int wallWidth = 50;
 
     private Point2D topLeft;
