@@ -163,14 +163,14 @@ public class Tank extends GameObject implements Destructible, Serializable {
                 this.destroy(gameObjects);
                 ((Bullet) gameObject).destroy(gameObjects);
             }else if(gameObject.getClass() == Wall.class){
-//                    if (gameObject.getCollision(getDirectTransform().createTransformedShape(direct))){
-//                        length -=5;
-////                        System.out.println("yes");
-//                    }
-//                    else {
-//                        length++;
-////                        System.out.println("no");
-//                    }
+                    if (gameObject.getCollision(getDirectTransform().createTransformedShape(pointer))){
+                        pointerLength -=10;
+//                        System.out.println("yes");
+                    }
+                    else {
+                        pointerLength++;
+//                        System.out.println("no");
+                    }
             }
 
         }
@@ -207,11 +207,12 @@ public class Tank extends GameObject implements Destructible, Serializable {
 
 //        g2d.setColor(color.darker());
 //        g2d.fill(getTurretTransform().createTransformedShape(new Rectangle2D.Double(0,0,turretWidth,turretHeight)));
+        pointer = new Rectangle2D.Double(0,0, pointerLength,1);
+        g2d.draw(getDirectTransform().createTransformedShape(pointer));
 
         g2d.drawImage(turretImage, getTurretTransform(),null);
 
-//        pointer = new Rectangle2D.Double(0,0, pointerLength,1);
-//        g2d.draw(getDirectTransform().createTransformedShape(pointer));
+
 
         if(debugActive){
             g2d.setColor(Color.RED);

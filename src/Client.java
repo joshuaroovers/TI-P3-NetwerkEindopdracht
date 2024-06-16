@@ -55,7 +55,7 @@ public class Client extends Application {
         players.add(playerId);
         System.out.println(playerId);
 
-        game = new Game(new Arena(new Point2D.Double(0,0), 500, 500));
+        game = new Game(new Arena(new Point2D.Double(0,0), 1500, 1000));
 
         Tank tank = new Tank(playerId, new Point2D.Double(0,0), Tank.tankColor.blue);
 //        players.put(playerId,tank);
