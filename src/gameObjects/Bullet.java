@@ -1,16 +1,12 @@
 package gameObjects;
 
-import game.Game;
-
 import java.awt.*;
 import java.awt.geom.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class  Bullet extends GameObject implements Destructible, Serializable {
 
-    private boolean drawHitbox = false;
     private int scale =2;
     private final int width = 10;
     private final int height = 20;
@@ -24,8 +20,9 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
 
     private GameObject lastCollision;
 
-    public Bullet(Point2D position, double direction){
+    public Bullet(Point2D position, double direction, boolean debugActive){
 
+        this.debugActive = debugActive;
         //2d rotation matrix math
         double cos = Math.cos(Math.toRadians(direction));
         double sin = Math.sin(Math.toRadians(direction));
@@ -39,6 +36,8 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
         this.hitbox = new Ellipse2D.Double(0,0,width,height);
         this.body = new Rectangle2D.Double(0,0,width,height);
 
+        this.color = Color.BLACK;
+
         this.bounces = 0;
 
         this.speedX = speed;
@@ -47,7 +46,7 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
     }
 
     @Override
-    public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
+    public void update(double time, CopyOnWriteArrayList<GameObject> gameObjects) {
         boolean isColliding = false;
 
         for (GameObject gameObject : gameObjects) {
@@ -104,20 +103,19 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
 
         AffineTransform tx = getTransform();
 
-        g2d.setColor(Color.black);
-        g2d.draw(tx.createTransformedShape(body));
         g2d.setColor(color);
         g2d.fill(tx.createTransformedShape(body));
-        if (drawHitbox) {
+
+        if (debugActive) {
             g2d.setColor(Color.RED);
             g2d.draw(tx.createTransformedShape(hitbox));
+            g2d.setColor(Color.GREEN);
+            g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
         }
-        g2d.setColor(Color.GREEN);
-        g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
     }
 
     @Override
-    public synchronized AffineTransform getTransform() {
+    public AffineTransform getTransform() {
         AffineTransform tx = new AffineTransform();
 
         tx.translate(position.getX()-(width/2),position.getY()-(height/2));
@@ -127,7 +125,7 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
     }
 
     @Override
-    public synchronized void destroy(CopyOnWriteArrayList<GameObject> gameObjects) {
+    public void destroy(CopyOnWriteArrayList<GameObject> gameObjects) {
         System.out.println("destroy "+this.getClass());
         if(gameObjects.remove(this)){
             System.out.println("removed: "+this.getClass()+" "+this);

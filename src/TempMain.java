@@ -40,17 +40,16 @@ public class TempMain extends Application {
             throw new RuntimeException(e);
         }
 
-        ArrayList<GameObject> gameObjects = new ArrayList<>();
 
-        tank1 = new Tank(new Point2D.Double(0,0),Color.BLUE,"blue");
-
-        gameObjects.add(tank1);
-        gameObjects.add(new Tank(new Point2D.Double(200,200), Color.GREEN,"green"));
+        tank1 = new Tank(null, new Point2D.Double(0,0), Tank.tankColor.blue);
         Arena arena = new Arena(new Point2D.Double(0,0),400,400);
-        game = new Game(arena,gameObjects);
-        for (Wall wall : arena.getWalls()) {
-            gameObjects.add(wall);
-        }
+        game = new Game(arena);
+
+        game.addGameObject(tank1);
+        game.addGameObject(new Tank(null, new Point2D.Double(0,200), Tank.tankColor.green));
+
+
+
 
         new AnimationTimer() {
             long last = -1;
@@ -99,7 +98,7 @@ public class TempMain extends Application {
     }
 
     private void update(double deltaTime){
-        System.out.println("deltatime: " + deltaTime);
+//        System.out.println("deltatime: " + deltaTime);
         game.update(deltaTime);
     }
 

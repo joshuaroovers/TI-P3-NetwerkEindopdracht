@@ -3,6 +3,7 @@ package gameObjects;
 import javax.imageio.ImageIO;
 
 import game.Game;
+import javafx.scene.input.KeyCode;
 
 import java.awt.geom.*;
 
@@ -11,54 +12,53 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Tank extends GameObject implements Destructible, Serializable {
 
+    public final UUID playerId;
     private final int speed = 200;
-    private int length;
+
     private boolean isMoving;
     private boolean isMovingUp;
     private boolean isRotatingRight;
     private boolean isRotatingLeft;
+
     private double turretRotation;
     private boolean isRotatingTurretRight;
     private boolean isRotatingTurretLeft;
+
     private Timer timer = new Timer(1000);
-    private String bodyImagePath;
-    private String turretImagePath;
     private final int turretWidth;
     private final int turretHeight;
 
-    Rectangle2D direct;
+    private int pointerLength;
+    Rectangle2D pointer;
+
+    private tankColor tankColor;
+    private BufferedImage bodyImage;
+    private BufferedImage turretImage;
+
+    public enum tankColor {blue, dark, green, red, sand};
 
 
-    public Tank(Point2D position, Color color,String colour) {
+    public Tank(UUID playerId, Point2D position, Tank.tankColor tankColor) {
+        this(playerId, position, 90.0, 90.0, tankColor);
+    }
 
-        this.bodyImagePath = "resources/tankBody_"+ colour+".png";
-        this.turretImagePath = "resources/tankBarrel_"+colour+".png";
+    public Tank(UUID playerId, Point2D position, double tankRotation, double turretRotation, Tank.tankColor tankColor) {
 
-        BufferedImage bodyImage;
-        BufferedImage turretImage;
+        this.playerId = playerId;
 
-        try {
-            bodyImage = ImageIO.read(new FileInputStream(bodyImagePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            turretImage = ImageIO.read(new FileInputStream(turretImagePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        setTankColor(tankColor);
 
         this.position = new Point2D.Double(position.getX(), position.getY());
-        this.rotation = 90;
+        this.rotation = tankRotation;
         this.body = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
         this.hitbox = new Rectangle2D.Double(0, 0, bodyImage.getWidth(), bodyImage.getHeight());
 
-        this.color = color;
+
         this.isMoving = false;
         this.isMovingUp = false;
 
@@ -71,15 +71,51 @@ public class Tank extends GameObject implements Destructible, Serializable {
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
 
-        this.turretRotation = rotation;
+        this.turretRotation = turretRotation;
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
 
-        this.length = 100;
+        this.pointerLength = 100;
+    }
+
+    private void setTankColor(Tank.tankColor tankColor) {
+        this.tankColor = tankColor;
+        String bodyImagePath = "resources/tankBody_"+ tankColor.toString() +".png";
+        String turretImagePath = "resources/tankBarrel_"+ tankColor.toString() +".png";
+
+
+        try {
+            this.bodyImage = ImageIO.read(new FileInputStream(bodyImagePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            this.turretImage = ImageIO.read(new FileInputStream(turretImagePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        switch (tankColor){
+            case blue:
+                this.color = Color.BLUE.darker();
+                break;
+            case green:
+                this.color = Color.GREEN.darker();
+                break;
+            case red:
+                this.color = Color.red.darker();
+                break;
+            case dark:
+                this.color = Color.BLACK.brighter();
+                break;
+            case sand:
+                this.color = Color.ORANGE.darker();
+                break;
+        }
     }
 
     @Override
-    public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
+    public void update(double time, CopyOnWriteArrayList<GameObject> gameObjects) {
 //        System.out.println("updating Tank");
         boolean isColliding = false;
         double newRotation = rotation;
@@ -164,103 +200,118 @@ public class Tank extends GameObject implements Destructible, Serializable {
     @Override
     public void draw(Graphics2D g2d) {
 
-//        BufferedImage bodyImage = null;
-//        BufferedImage turretImage = null;
-//
-//        try {
-//           bodyImage = ImageIO.read(new FileInputStream(bodyImagePath));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        try {
-//            turretImage = ImageIO.read(new FileInputStream(turretImagePath));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+//        g2d.setColor(color);
+//        g2d.fill(getTransform().createTransformedShape(body));
 
-        AffineTransform tankTx = getTransform();
-        g2d.setColor(color);
-        g2d.fill(tankTx.createTransformedShape(body));
+        g2d.drawImage(bodyImage, getTransform(),null);
 
-//        g2d.drawImage(bodyImage,tankTx,null);
+//        g2d.setColor(color.darker());
+//        g2d.fill(getTurretTransform().createTransformedShape(new Rectangle2D.Double(0,0,turretWidth,turretHeight)));
 
-        AffineTransform turretTx = getTurretTransform();
-        g2d.setColor(color.darker());
-        g2d.fill(turretTx.createTransformedShape(new Rectangle2D.Double(0,0,turretWidth,turretHeight)));
+        g2d.drawImage(turretImage, getTurretTransform(),null);
 
-//        g2d.drawImage(turretImage,turretTx,null);
+//        pointer = new Rectangle2D.Double(0,0, pointerLength,1);
+//        g2d.draw(getDirectTransform().createTransformedShape(pointer));
 
-        direct = new Rectangle2D.Double(0,0,length,1);
-        g2d.draw(getDirectTransform().createTransformedShape(direct));
-
-
-        g2d.setColor(Color.RED);
-        g2d.draw(tankTx.createTransformedShape(hitbox.getBounds2D()));
-//        g2d.setColor(Color.GREEN);
-//        g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
+        if(debugActive){
+            g2d.setColor(Color.RED);
+            g2d.draw(getTransform().createTransformedShape(hitbox.getBounds2D()));
+            g2d.setColor(Color.WHITE);
+            g2d.fill(new Ellipse2D.Double(position.getX()-1, position.getY()-1,2,2));
+        }
     }
-
-    private AffineTransform getTurretTransform() {
-        AffineTransform turretTx = new AffineTransform();
-        turretTx.translate(position.getX()-(turretWidth/2),position.getY()-(turretHeight/2));
-        turretTx.rotate(Math.toRadians(turretRotation), (turretWidth/2), (turretHeight/2));
-        return turretTx;
-    }
-
-    private AffineTransform getDirectTransform() {
-        AffineTransform directTx = getTurretTransform();
-        directTx.translate((turretWidth/2),(turretHeight/2));
-        return directTx;
-    }
-
 
     @Override
-    public synchronized AffineTransform getTransform() {
+    public AffineTransform getTransform() {
         AffineTransform tx = new AffineTransform();
         tx.translate(position.getX()-(width/2),position.getY()-(height/2));
         tx.rotate(Math.toRadians(rotation), (width/2),(height/2));
 
         return tx;
     }
+    private AffineTransform getTurretTransform() {
+        AffineTransform turretTx = new AffineTransform();
+        turretTx.translate(position.getX()-(turretWidth/2),position.getY()-(turretHeight/2));
+        turretTx.rotate(Math.toRadians(turretRotation), (turretWidth/2), (turretHeight/2));
+        return turretTx;
+    }
+    private AffineTransform getDirectTransform() {
+        AffineTransform directTx = getTurretTransform();
+        directTx.translate((turretWidth/2),(turretHeight/2));
+        return directTx;
+    }
 
+    public TankConstructorShell getConstructorShell(){
+        return new TankConstructorShell(playerId, position, rotation, turretRotation, tankColor);
+    }
 
-    public synchronized void setMovement(boolean move, boolean moveUp) {
+//#region setters for movement booleans
+    public void setMovement(boolean move, boolean moveUp) {
         this.isMoving = move;
         this.isMovingUp = moveUp;
     }
-    public synchronized void stopMovement(){
+    public void stopMovement(){
         this.isMoving = false;
     }
 
-    public synchronized void setRotateRight(){
+    public void setRotateRight(){
         this.isRotatingRight = true;
     }
-
-    public synchronized void setRotateLeft(){
+    public void setRotateLeft(){
         this.isRotatingLeft = true;
     }
-
-    public synchronized void stopRotate(){
+    public void stopRotate(){
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
     }
 
-    public synchronized void setRotateTurretRight() {
+    public void setRotateTurretRight() {
         this.isRotatingTurretRight = true;
     }
-    public synchronized void setRotateTurretLeft() {
+    public void setRotateTurretLeft() {
         this.isRotatingTurretLeft = true;
     }
-    public synchronized void stopRotateTurret(){
+    public void stopRotateTurret(){
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
     }
+//#endregion
 
-    public synchronized void fireBullet(CopyOnWriteArrayList<GameObject> gameObjects) {
+    public void fireBullet(CopyOnWriteArrayList<GameObject> gameObjects) {
         if (timer.timeout()){
-            gameObjects.add(new Bullet(position, turretRotation));
+            gameObjects.add(new Bullet(position, turretRotation, debugActive));
             timer.setInterval(500);
         }
+    }
+
+    public void handleKeyInput(KeyInput keyInput, Game game){
+        if(keyInput.isPress){
+            if(keyInput.keyCode == KeyCode.W){
+                setMovement(true,true);
+            } else if(keyInput.keyCode == KeyCode.S){
+                setMovement(true,false);
+            }else if(keyInput.keyCode == KeyCode.A){
+                setRotateLeft();
+            }else if(keyInput.keyCode == KeyCode.D){
+                setRotateRight();
+            }else if(keyInput.keyCode == KeyCode.LEFT){
+                setRotateTurretLeft();
+            }else if(keyInput.keyCode == KeyCode.RIGHT){
+                setRotateTurretRight();
+            }else if(keyInput.keyCode == KeyCode.UP){
+                fireBullet(game.getGameObjects());
+            }
+        }
+        else{
+            if(keyInput.keyCode == KeyCode.W || keyInput.keyCode == KeyCode.S){
+                stopMovement();
+            }else if(keyInput.keyCode == KeyCode.A || keyInput.keyCode == KeyCode.D){
+                stopRotate();
+            }else if(keyInput.keyCode == KeyCode.LEFT || keyInput.keyCode == KeyCode.RIGHT){
+                stopRotateTurret();
+            }
+        }
+
     }
 
     @Override

@@ -1,15 +1,11 @@
 package gameObjects;
 
-import game.Game;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class GameObject implements Serializable {
@@ -20,11 +16,14 @@ public abstract class GameObject implements Serializable {
     int height;
     int width;
     Color color;
+    boolean debugActive;
 
-    public abstract void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game);
-
+    public abstract void update(double time, CopyOnWriteArrayList<GameObject> gameObjects);
     public abstract void draw(Graphics2D g2d);
     public abstract AffineTransform getTransform();
+    public void setDebugActive(boolean state){
+        this.debugActive = state;
+    }
     public boolean getCollision(Shape collider){
         Area colliderArea = new Area(collider);
         Area objectArea = new Area(getCollider());

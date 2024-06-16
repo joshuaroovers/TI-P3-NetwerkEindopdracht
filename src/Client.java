@@ -1,8 +1,5 @@
 import game.Game;
-import gameObjects.Arena;
-import gameObjects.GameObject;
-import gameObjects.Tank;
-import gameObjects.Wall;
+import gameObjects.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,11 +15,11 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.*;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Client extends Application {
     private ResizableCanvas canvas;
@@ -33,6 +30,9 @@ public class Client extends Application {
     private FXGraphics2D g2d;
     private Socket serverSocket;
     private static ObjectOutputStream output;
+
+    private UUID playerId;
+    private ArrayList<UUID> players;
 
 
     @Override
@@ -49,8 +49,33 @@ public class Client extends Application {
         scene.setOnKeyPressed(e -> keyPressedHandle(e));
         scene.setOnKeyReleased(e -> keyReleasedHandle(e));
 
+        players = new ArrayList<>();
+
+        playerId = UUID.randomUUID();
+        players.add(playerId);
+        System.out.println(playerId);
+
+        game = new Game(new Arena(new Point2D.Double(0,0), 500, 500));
+
+        Tank tank = new Tank(playerId, new Point2D.Double(0,0), Tank.tankColor.blue);
+//        players.put(playerId,tank);
+        game.addGameObject(tank);
 
         new Thread(this::handleConnection).start();
+
+        new AnimationTimer() {
+            long last = -1;
+
+            @Override
+            public void handle(long now)
+            {
+                if (last == -1)
+                    last = now;
+                update((now - last) / 1000000000.0);
+                last = now;
+                draw(g2d);
+            }
+        }.start();
 
 
         primaryStage.setScene(scene);
@@ -59,14 +84,20 @@ public class Client extends Application {
         draw(g2d);
 
         primaryStage.setOnCloseRequest(t -> {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if(serverSocket != null){
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             Platform.exit();
             System.exit(0);
         });
+    }
+
+    private void update(double v) {
+        game.update(v);
     }
 
 
@@ -79,9 +110,33 @@ public class Client extends Application {
             output = new ObjectOutputStream(serverSocket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
 
+            sendMessage(MessageType.NEW_TANK, game.getTank(playerId).getConstructorShell());
+
             while(serverSocket.isConnected())
             {
-                game = getGameUpdate(input);
+
+                MessageType messageType = (MessageType) input.readObject();
+                System.out.println(messageType);
+                switch (messageType){
+                    case TANK_INPUT:
+                        KeyInput keyInput = (KeyInput) input.readObject();
+                        System.out.println("recieved input from: " + keyInput.playerId);
+                        game.getTank(
+                                keyInput.playerId)
+                                .handleKeyInput(keyInput, game);
+                        break;
+                    case NEW_TANK:
+                        TankConstructorShell tankShell = (TankConstructorShell) input.readObject();
+                        if(isNewPlayer(tankShell.playerId)){
+                            Tank tank = new Tank(tankShell.playerId, tankShell.position, tankShell.tankRotation, tankShell.turretRotation, tankShell.tankColor);
+                            game.addGameObject(tank);
+                        }
+                        break;
+                    case FETCH_TANK:
+                        sendMessage(MessageType.NEW_TANK, game.getTank(playerId).getConstructorShell());
+                        break;
+                }
+
                 draw(g2d);
             }
 
@@ -90,10 +145,6 @@ public class Client extends Application {
         {
             throw new RuntimeException(e);
         }
-    }
-
-    private synchronized Game getGameUpdate(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        return (Game) ois.readObject();
     }
 
     private synchronized void draw(FXGraphics2D g2d){
@@ -109,10 +160,7 @@ public class Client extends Application {
         g2d.draw(new Line2D.Double(0,0,0,1000));
 
 
-        if(game != null){
-            game.draw(g2d);
-        }
-
+        game.draw(g2d);
 
 //        g2d.setColor(Color.RED);
 //        g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
@@ -130,7 +178,7 @@ public class Client extends Application {
                     e.getCode() == KeyCode.RIGHT){
                 System.out.println("key pressed: "+ e.getCharacter() + " :" + e.getCode());
                 lastKeyPress = e.getCode();
-                sendKeyInput(e.getCode(), true);
+                handleKeyInput(e.getCode(), true);
             }
         }
     }
@@ -146,19 +194,38 @@ public class Client extends Application {
             if(lastKeyPress == e.getCode()){
                 lastKeyPress = null;
             }
-            sendKeyInput(e.getCode(), false);
+            handleKeyInput(e.getCode(), false);
+        }else if(e.getCode() == KeyCode.SLASH){
+            game.toggleDebug();
         }
     }
 
-    private void sendKeyInput(KeyCode keyCode, boolean isPress){
-        try {
-            KeyInput input = new KeyInput(keyCode, isPress);
-            output.reset();
-            output.writeObject(input);
-            output.flush();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+    private boolean isNewPlayer(UUID playerId){
+        boolean isNewPlayer = true;
+        for (UUID player : players) {
+            if(player == playerId){
+                isNewPlayer = false;
+            }
         }
+        return isNewPlayer;
+    }
+
+    private void handleKeyInput(KeyCode keyCode, boolean isPress){
+        KeyInput keyInput = new KeyInput(playerId, keyCode, isPress);
+
+        game.getTank(keyInput.playerId).handleKeyInput(keyInput, game);
+        sendMessage(MessageType.TANK_INPUT, keyInput);
+    }
+
+    private void sendMessage(MessageType messageType, Object data){
+            try {
+                output.reset();
+                output.writeObject(messageType);
+                output.writeObject(data);
+                output.flush();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
     }
 
 }

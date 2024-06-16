@@ -33,7 +33,7 @@ public class Wall extends GameObject implements Serializable {
 
 
     @Override
-    public void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
+    public void update(double time, CopyOnWriteArrayList<GameObject> gameObjects) {
 
     }
 
@@ -45,17 +45,17 @@ public class Wall extends GameObject implements Serializable {
         g2d.draw(tx.createTransformedShape(body));
         g2d.fill(tx.createTransformedShape(body));
 
-//        g2d.setColor(Color.RED);
-//        g2d.draw(tx.createTransformedShape(hitbox));
+        if(debugActive){
+            g2d.setColor(Color.RED);
+            g2d.draw(tx.createTransformedShape(hitBoxLineTop));
+            g2d.setColor(Color.BLUE);
+            g2d.draw(tx.createTransformedShape(hitBoxLineRight));
+            g2d.setColor(Color.YELLOW);
+            g2d.draw(tx.createTransformedShape(hitBoxLineBottom));
+            g2d.setColor(Color.GREEN);
+            g2d.draw(tx.createTransformedShape(hitBoxLineLeft));
+        }
 
-//        g2d.setColor(Color.RED);
-//        g2d.draw(tx.createTransformedShape(hitBoxLineTop));
-//        g2d.setColor(Color.BLUE);
-//        g2d.draw(tx.createTransformedShape(hitBoxLineRight));
-//        g2d.setColor(Color.YELLOW);
-//        g2d.draw(tx.createTransformedShape(hitBoxLineBottom));
-//        g2d.setColor(Color.GREEN);
-//        g2d.draw(tx.createTransformedShape(hitBoxLineLeft));
     }
 
 

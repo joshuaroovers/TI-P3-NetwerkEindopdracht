@@ -2,27 +2,23 @@ package game;
 
 import gameObjects.Arena;
 import gameObjects.GameObject;
+import gameObjects.Tank;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game implements Serializable {
     private CopyOnWriteArrayList<GameObject> gameObjects;
-    private BufferedImage image;
+    private boolean debugActive;
 
-    public Game(Arena arena, ArrayList<GameObject> gameObjects){
-        this.gameObjects = new CopyOnWriteArrayList<>();
-         for (GameObject gameObject : arena.getWalls()) {
-            gameObjects.add(gameObject);
-        }
-        this.gameObjects.addAll(gameObjects);
-
-    }
 
     public Game(Arena arena) {
+        this.debugActive = false;
+
         gameObjects = new CopyOnWriteArrayList<>();
         gameObjects.addAll(arena.getWalls());
 
@@ -33,11 +29,11 @@ public class Game implements Serializable {
         }
     }
 
-    public synchronized void update(double time) {
+    public void update(double time) {
 //        System.out.println("updating gameObjects");
         for (GameObject gameObject : gameObjects) {
 //            System.out.println("gameobject: " + gameObject);
-            gameObject.update(time, gameObjects, this);
+            gameObject.update(time, gameObjects);
         }
     }
 
@@ -51,8 +47,30 @@ public class Game implements Serializable {
         return gameObjects;
     }
 
-    public synchronized void addGameObject(GameObject gameObject) {
+    public void addGameObject(GameObject gameObject) {
         gameObjects.add(gameObject);
+    }
+
+    public Tank getTank(UUID playerId){
+        Tank tank = null;
+        for (GameObject gameObject : gameObjects) {
+            if(gameObject.getClass() == Tank.class){
+                System.out.println("looking for tank: " + playerId + " found: " + ((Tank) gameObject).playerId);
+                System.out.println(((Tank) gameObject).playerId.equals(playerId));
+                if(((Tank) gameObject).playerId.equals(playerId)){
+                    System.out.println("found tank for " + playerId + ": "+ ((Tank) gameObject).playerId);
+                    tank = (Tank) gameObject;
+                }
+            }
+        }
+        return tank;
+    }
+
+    public void toggleDebug(){
+        this.debugActive = !debugActive;
+        for (GameObject gameObject : gameObjects) {
+            gameObject.setDebugActive(debugActive);
+        }
     }
 
 }
