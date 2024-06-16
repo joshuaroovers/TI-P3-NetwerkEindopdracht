@@ -71,7 +71,7 @@ public class Tank extends GameObject implements Destructible, Serializable {
         this.isRotatingRight = false;
         this.isRotatingLeft = false;
 
-        this.turretRotation = rotation+90;
+        this.turretRotation = rotation;
         this.isRotatingTurretRight = false;
         this.isRotatingTurretLeft = false;
 

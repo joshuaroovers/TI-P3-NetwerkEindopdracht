@@ -114,9 +114,8 @@ public class Client extends Application {
         }
 
 
-        g2d.setColor(Color.RED);
-        g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
-
+//        g2d.setColor(Color.RED);
+//        g2d.fill(new Rectangle2D.Double(-1,-1, 2,2));
     }
 
 

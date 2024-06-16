@@ -19,7 +19,8 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
     private int speedX;
     private int speedY;
     private double displayRotation;
-    private int maxBounces;
+    private final int maxBounces  = 2;
+    private int bounces;
 
     private GameObject lastCollision;
 
@@ -38,7 +39,8 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
         this.hitbox = new Ellipse2D.Double(0,0,width,height);
         this.body = new Rectangle2D.Double(0,0,width,height);
 
-        this.maxBounces = 2;
+        this.bounces = 0;
+
         this.speedX = speed;
         this.speedY = speed;
         this.displayRotation = direction;
@@ -46,14 +48,13 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
 
     @Override
     public synchronized void update(double time, CopyOnWriteArrayList<GameObject> gameObjects, Game game) {
-        System.out.println("updating Bullet");
         boolean isColliding = false;
 
         for (GameObject gameObject : gameObjects) {
             if(gameObject.getClass() == Wall.class){
                 if(gameObject.getCollision(getCollider()) && gameObject != lastCollision){
-                    if (maxBounces !=0){
-                        maxBounces--;
+                    if (bounces != maxBounces){
+                        bounces++;
                         lastCollision = gameObject;
                         if(((Wall) gameObject).isVerticalCollision(getCollider())){
                             System.out.println("bounce vertical wall");

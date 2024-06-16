@@ -45,13 +45,9 @@ public class Game implements Serializable {
         for (GameObject gameObject : gameObjects) {
             gameObject.draw(g2d);
         }
-
-//        AffineTransform tx = new AffineTransform();
-//        tx.translate(-image.getWidth()/2,-image.getHeight()/2);
-//        g2d.drawImage(image, tx,null);
     }
 
-    public synchronized CopyOnWriteArrayList<GameObject> getGameObjects() {
+    public CopyOnWriteArrayList<GameObject> getGameObjects() {
         return gameObjects;
     }
 
