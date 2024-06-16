@@ -1,13 +1,11 @@
 package game;
 
-import gameObjects.Arena;
 import gameObjects.GameObject;
 import gameObjects.Tank;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.geom.Line2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -38,6 +36,13 @@ public class Game implements Serializable {
     }
 
     public void draw(Graphics2D g2d) {
+        if(debugActive){
+            g2d.setColor(Color.BLUE);
+            g2d.draw(new Line2D.Double(0,0,1000,0));
+            g2d.setColor(Color.RED);
+            g2d.draw(new Line2D.Double(0,0,0,1000));
+        }
+
         for (GameObject gameObject : gameObjects) {
             gameObject.draw(g2d);
         }
@@ -55,10 +60,7 @@ public class Game implements Serializable {
         Tank tank = null;
         for (GameObject gameObject : gameObjects) {
             if(gameObject.getClass() == Tank.class){
-                System.out.println("looking for tank: " + playerId + " found: " + ((Tank) gameObject).playerId);
-                System.out.println(((Tank) gameObject).playerId.equals(playerId));
                 if(((Tank) gameObject).playerId.equals(playerId)){
-                    System.out.println("found tank for " + playerId + ": "+ ((Tank) gameObject).playerId);
                     tank = (Tank) gameObject;
                 }
             }

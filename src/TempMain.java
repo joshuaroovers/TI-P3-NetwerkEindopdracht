@@ -1,3 +1,4 @@
+import game.Arena;
 import gameObjects.*;
 import game.Game;
 import javafx.animation.AnimationTimer;
@@ -16,7 +17,6 @@ import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class TempMain extends Application {
 

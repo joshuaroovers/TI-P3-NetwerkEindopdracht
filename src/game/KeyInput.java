@@ -1,4 +1,4 @@
-package gameObjects;
+package game;
 
 import javafx.scene.input.KeyCode;
 
@@ -18,7 +18,7 @@ public class KeyInput implements Serializable {
 
     @Override
     public String toString() {
-        return "gameObjects.KeyInput{" +
+        return "game.KeyInput{" +
                 "keyCode=" + keyCode +
                 ", isPress=" + isPress +
                 '}';

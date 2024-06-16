@@ -13,6 +13,10 @@ public class TankConstructorShell implements Serializable {
     public double turretRotation;
     public Tank.tankColor tankColor;
 
+    public TankConstructorShell(UUID playerId, Tank.tankColor tankColor) {
+        this(playerId, null, 0.0, 0.0, tankColor);
+    }
+
     public TankConstructorShell(UUID playerId, Point2D position, double tankRotation, double turretRotation, Tank.tankColor tankColor) {
         this.playerId = playerId;
         this.position = position;

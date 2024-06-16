@@ -3,6 +3,8 @@ package gameObjects;
 import javax.imageio.ImageIO;
 
 import game.Game;
+import game.KeyInput;
+import game.Timer;
 import javafx.scene.input.KeyCode;
 
 import java.awt.geom.*;
@@ -78,7 +80,7 @@ public class Tank extends GameObject implements Destructible, Serializable {
         this.pointerLength = 100;
     }
 
-    private void setTankColor(Tank.tankColor tankColor) {
+    public void setTankColor(Tank.tankColor tankColor) {
         this.tankColor = tankColor;
         String bodyImagePath = "resources/tankBody_"+ tankColor.toString() +".png";
         String turretImagePath = "resources/tankBarrel_"+ tankColor.toString() +".png";
@@ -163,14 +165,14 @@ public class Tank extends GameObject implements Destructible, Serializable {
                 this.destroy(gameObjects);
                 ((Bullet) gameObject).destroy(gameObjects);
             }else if(gameObject.getClass() == Wall.class){
-                    if (gameObject.getCollision(getDirectTransform().createTransformedShape(pointer))){
-                        pointerLength -=10;
-//                        System.out.println("yes");
-                    }
-                    else {
-                        pointerLength++;
-//                        System.out.println("no");
-                    }
+//                    if (gameObject.getCollision(getDirectTransform().createTransformedShape(pointer))){
+//                        pointerLength -=10;
+////                        System.out.println("yes");
+//                    }
+//                    else {
+//                        pointerLength++;
+////                        System.out.println("no");
+//                    }
             }
 
         }
@@ -207,8 +209,8 @@ public class Tank extends GameObject implements Destructible, Serializable {
 
 //        g2d.setColor(color.darker());
 //        g2d.fill(getTurretTransform().createTransformedShape(new Rectangle2D.Double(0,0,turretWidth,turretHeight)));
-        pointer = new Rectangle2D.Double(0,0, pointerLength,1);
-        g2d.draw(getDirectTransform().createTransformedShape(pointer));
+//        pointer = new Rectangle2D.Double(0,0, pointerLength,1);
+//        g2d.draw(getDirectTransform().createTransformedShape(pointer));
 
         g2d.drawImage(turretImage, getTurretTransform(),null);
 

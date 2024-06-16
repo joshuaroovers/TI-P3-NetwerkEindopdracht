@@ -1,4 +1,5 @@
-import gameObjects.KeyInput;
+import game.KeyInput;
+import game.MessageType;
 import gameObjects.TankConstructorShell;
 
 import java.io.IOException;
@@ -21,18 +22,14 @@ public class Server {
         clientOos = new ConcurrentHashMap<>();
 
         try {
-//            game = new Game(new Arena(new Point2D.Double(0,0), 500, 500));
-//            updatedGame = game;
             serverSocket = new ServerSocket(8000);
-
 
             while (true) {
                 Socket client = serverSocket.accept();
 
-                new Thread(() -> updateClient(client)).start();
-
                 clientOos.put(client, new ObjectOutputStream(client.getOutputStream()));
                 clients.add(client);
+                new Thread(() -> updateClient(client)).start();
 
             }
         } catch (Exception e) {
@@ -60,6 +57,10 @@ public class Server {
                         TankConstructorShell tankShell = (TankConstructorShell) ois.readObject();
                         messageClientsExcept(client, messageType, tankShell);
                         break;
+                    case UPDATE_COLOR:
+                        TankConstructorShell tankShell2 = (TankConstructorShell) ois.readObject();
+                        messageClientsExcept(client, messageType, tankShell2);
+                        break;
                 }
 
 
@@ -68,7 +69,7 @@ public class Server {
             clients.remove(client);
             client.close();
             clientOos.remove(client);
-//            tank.destroy(game.getGameObjects());
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

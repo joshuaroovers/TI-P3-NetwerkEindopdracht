@@ -1,12 +1,17 @@
+import game.Arena;
 import game.Game;
+import game.KeyInput;
+import game.MessageType;
 import gameObjects.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
@@ -18,7 +23,6 @@ import java.awt.geom.Point2D;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Client extends Application {
@@ -33,6 +37,7 @@ public class Client extends Application {
 
     private UUID playerId;
     private ArrayList<UUID> players;
+    private int tankColorStepIndex; //current selected color from Tank.tankColor.values()
 
 
     @Override
@@ -40,6 +45,7 @@ public class Client extends Application {
         Scene scene;
 
         BorderPane mainPane = new BorderPane();
+
         scene = new Scene(mainPane);
         canvas = new ResizableCanvas(g -> draw(g), mainPane);
         mainPane.setCenter(canvas);
@@ -49,16 +55,17 @@ public class Client extends Application {
         scene.setOnKeyPressed(e -> keyPressedHandle(e));
         scene.setOnKeyReleased(e -> keyReleasedHandle(e));
 
+        tankColorStepIndex = 0;
+
         players = new ArrayList<>();
 
         playerId = UUID.randomUUID();
         players.add(playerId);
         System.out.println(playerId);
 
-        game = new Game(new Arena(new Point2D.Double(0,0), 1500, 1000));
+        game = new Game(new Arena(new Point2D.Double(0,0), 1500, 800));
 
         Tank tank = new Tank(playerId, new Point2D.Double(0,0), Tank.tankColor.blue);
-//        players.put(playerId,tank);
         game.addGameObject(tank);
 
         new Thread(this::handleConnection).start();
@@ -79,7 +86,7 @@ public class Client extends Application {
 
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Tank Game");
+        primaryStage.setTitle("Tank Game " + playerId.toString().substring(0,5));
         primaryStage.show();
         draw(g2d);
 
@@ -121,9 +128,7 @@ public class Client extends Application {
                     case TANK_INPUT:
                         KeyInput keyInput = (KeyInput) input.readObject();
                         System.out.println("recieved input from: " + keyInput.playerId);
-                        game.getTank(
-                                keyInput.playerId)
-                                .handleKeyInput(keyInput, game);
+                        game.getTank(keyInput.playerId).handleKeyInput(keyInput, game);
                         break;
                     case NEW_TANK:
                         TankConstructorShell tankShell = (TankConstructorShell) input.readObject();
@@ -134,6 +139,10 @@ public class Client extends Application {
                         break;
                     case FETCH_TANK:
                         sendMessage(MessageType.NEW_TANK, game.getTank(playerId).getConstructorShell());
+                        break;
+                    case UPDATE_COLOR:
+                        TankConstructorShell tankShell2 = (TankConstructorShell) input.readObject();
+                        game.getTank(tankShell2.playerId).setTankColor(tankShell2.tankColor);
                         break;
                 }
 
@@ -153,11 +162,6 @@ public class Client extends Application {
         g2d.clearRect(0, 0, (int)canvas.getWidth(), (int)canvas.getHeight());
         g2d.translate((int)canvas.getWidth()/2, (int)canvas.getHeight()/2);
         g2d.scale(1,-1);
-
-        g2d.setColor(Color.BLUE);
-        g2d.draw(new Line2D.Double(0,0,1000,0));
-        g2d.setColor(Color.RED);
-        g2d.draw(new Line2D.Double(0,0,0,1000));
 
 
         game.draw(g2d);
@@ -197,6 +201,13 @@ public class Client extends Application {
             handleKeyInput(e.getCode(), false);
         }else if(e.getCode() == KeyCode.SLASH){
             game.toggleDebug();
+        }else if(e.getCode() == KeyCode.PERIOD){
+            tankColorStepIndex++;
+            if(tankColorStepIndex >= Tank.tankColor.values().length){
+                tankColorStepIndex = 0;
+            }
+            game.getTank(playerId).setTankColor(Tank.tankColor.values()[tankColorStepIndex]);
+            sendMessage(MessageType.UPDATE_COLOR, new TankConstructorShell(playerId, Tank.tankColor.values()[tankColorStepIndex]));
         }
     }
 

@@ -26,7 +26,7 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
         //2d rotation matrix math
         double cos = Math.cos(Math.toRadians(direction));
         double sin = Math.sin(Math.toRadians(direction));
-        double x = position.getX()+85 - position.getX();  //85 is the offset should prob be relative to tank and bullet size rather than hard coded
+        double x = position.getX()+65 - position.getX();  //85 is the offset should prob be relative to tank and bullet size rather than hard coded
         double y = position.getY()+0 - position.getY();
         double newX = x*cos - y*sin +position.getX();
         double newY = y*cos + x*sin +position.getY();
@@ -56,10 +56,10 @@ public class  Bullet extends GameObject implements Destructible, Serializable {
                         bounces++;
                         lastCollision = gameObject;
                         if(((Wall) gameObject).isVerticalCollision(getCollider())){
-                            System.out.println("bounce vertical wall");
+//                            System.out.println("bounce vertical wall");
                             this.speedX = -speedX;
                         }else{
-                            System.out.println("bounce horizontal wall");
+//                            System.out.println("bounce horizontal wall");
                             this.speedY = -speedY;
                         }
                         displayRotation = 180-displayRotation;

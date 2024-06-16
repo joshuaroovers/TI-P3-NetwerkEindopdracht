@@ -75,13 +75,13 @@ public class Wall extends GameObject implements Serializable {
         colliderArea3.intersect(rightLineArea);
         colliderArea4.intersect(leftLineArea);
         if(!colliderArea3.isEmpty() || !colliderArea4.isEmpty()){
-            System.out.println("!!!!either left or right wall");
+//            System.out.println("!!!!either left or right wall");
             return true;
         }else if(!colliderArea1.isEmpty() || !colliderArea2.isEmpty()){
-            System.out.println("!!!!either top or bottom wall");
+//            System.out.println("!!!!either top or bottom wall");
             return false;
         }else{
-            System.out.println("no border collision");
+//            System.out.println("no border collision");
             return false;
         }
     }
