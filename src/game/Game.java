@@ -57,15 +57,10 @@ public class Game implements Serializable {
     }
 
     public Tank getTank(UUID playerId){
-        Tank tank = null;
-        for (GameObject gameObject : gameObjects) {
-            if(gameObject.getClass() == Tank.class){
-                if(((Tank) gameObject).playerId.equals(playerId)){
-                    tank = (Tank) gameObject;
-                }
-            }
-        }
-        return tank;
+        return (Tank) gameObjects.stream().
+                filter(p -> p.getClass().equals(Tank.class)).
+                filter(p -> ((Tank) p).playerId.equals(playerId)).
+                findFirst().get();
     }
 
     public void toggleDebug(){

@@ -7,18 +7,15 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import org.jfree.fx.FXGraphics2D;
 import org.jfree.fx.ResizableCanvas;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.net.Socket;
@@ -35,7 +32,7 @@ public class Client extends Application {
     private Socket serverSocket;
     private static ObjectOutputStream output;
 
-    private UUID playerId;
+    private UUID clientId;
     private ArrayList<UUID> players;
     private int tankColorStepIndex; //current selected color from Tank.tankColor.values()
 
@@ -59,13 +56,13 @@ public class Client extends Application {
 
         players = new ArrayList<>();
 
-        playerId = UUID.randomUUID();
-        players.add(playerId);
-        System.out.println(playerId);
+        clientId = UUID.randomUUID();
+        players.add(clientId);
+        System.out.println(clientId);
 
         game = new Game(new Arena(new Point2D.Double(0,0), 1500, 800));
 
-        Tank tank = new Tank(playerId, new Point2D.Double(0,0), Tank.tankColor.blue);
+        Tank tank = new Tank(clientId, new Point2D.Double(0,0), Tank.tankColor.blue);
         game.addGameObject(tank);
 
         new Thread(this::handleConnection).start();
@@ -86,7 +83,7 @@ public class Client extends Application {
 
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Tank Game " + playerId.toString().substring(0,5));
+        primaryStage.setTitle("Tank Game " + clientId.toString().substring(0,5));
         primaryStage.show();
         draw(g2d);
 
@@ -117,7 +114,7 @@ public class Client extends Application {
             output = new ObjectOutputStream(serverSocket.getOutputStream());
             ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
 
-            sendMessage(MessageType.NEW_TANK, game.getTank(playerId).getConstructorShell());
+            sendMessage(MessageType.NEW_TANK, game.getTank(clientId).getConstructorShell());
 
             while(serverSocket.isConnected())
             {
@@ -138,7 +135,7 @@ public class Client extends Application {
                         }
                         break;
                     case FETCH_TANK:
-                        sendMessage(MessageType.NEW_TANK, game.getTank(playerId).getConstructorShell());
+                        sendMessage(MessageType.NEW_TANK, game.getTank(clientId).getConstructorShell());
                         break;
                     case UPDATE_COLOR:
                         TankConstructorShell tankShell2 = (TankConstructorShell) input.readObject();
@@ -206,8 +203,8 @@ public class Client extends Application {
             if(tankColorStepIndex >= Tank.tankColor.values().length){
                 tankColorStepIndex = 0;
             }
-            game.getTank(playerId).setTankColor(Tank.tankColor.values()[tankColorStepIndex]);
-            sendMessage(MessageType.UPDATE_COLOR, new TankConstructorShell(playerId, Tank.tankColor.values()[tankColorStepIndex]));
+            game.getTank(clientId).setTankColor(Tank.tankColor.values()[tankColorStepIndex]);
+            sendMessage(MessageType.UPDATE_COLOR, new TankConstructorShell(clientId, Tank.tankColor.values()[tankColorStepIndex]));
         }
     }
 
@@ -222,7 +219,7 @@ public class Client extends Application {
     }
 
     private void handleKeyInput(KeyCode keyCode, boolean isPress){
-        KeyInput keyInput = new KeyInput(playerId, keyCode, isPress);
+        KeyInput keyInput = new KeyInput(clientId, keyCode, isPress);
 
         game.getTank(keyInput.playerId).handleKeyInput(keyInput, game);
         sendMessage(MessageType.TANK_INPUT, keyInput);
