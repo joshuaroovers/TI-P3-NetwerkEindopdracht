@@ -24,4 +24,16 @@ public class TankConstructorShell implements Serializable {
         this.turretRotation = turretRotation;
         this.tankColor = tankColor;
     }
+
+    public double getTankRotation() {
+        return tankRotation;
+    }
+
+    public double getTurretRotation() {
+        return turretRotation;
+    }
+
+    public Point2D getPosition() {
+        return position;
+    }
 }

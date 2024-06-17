@@ -324,4 +324,9 @@ public class Tank extends GameObject implements Destructible, Serializable {
             System.out.println("removed: "+this.getClass()+" "+this);
         }
     }
+    private void syncUpdate(TankConstructorShell tankConstructorShell){
+        this.position = tankConstructorShell.getPosition();
+        this.rotation = tankConstructorShell.getTankRotation();
+        this.turretRotation = tankConstructorShell.getTurretRotation();
+    }
 }
